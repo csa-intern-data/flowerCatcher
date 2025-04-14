@@ -39,7 +39,7 @@
             align-items: center;
             justify-content: center;
             z-index: 10;
-            background-image: url('Thumbnail.jpg');
+            background-image: url('https://dl3.pushbulletusercontent.com/HlUFKIRK9bwDrUaR0MM6tLauGpIi9NYM/Thumbnail.jpg');
             background-size: cover;
             background-position: center;
         }
@@ -79,7 +79,7 @@
             transform: translateX(-50%);
             width: 200px;
             height: 60px;
-            background-image: url('Score Board.png');
+            background-image: url('https://dl3.pushbulletusercontent.com/O69AWgDoCCGTuZFXskiAW5jW2AYu0oVU/Score%20Board.png');
             background-size: contain;
             background-repeat: no-repeat;
             background-position: center;
@@ -142,13 +142,13 @@
 <body>
     <div id="gameContainer">
         <!-- Background -->
-        <img id="backgroundImage" src="Background UI.jpg" alt="Background">
+        <img id="backgroundImage" src="https://dl3.pushbulletusercontent.com/EeCvNGCb29c3G05kNHLJMDezLnckrItz/Background%20UI.jpg" alt="Background">
         
         <!-- Welcome Screen -->
         <div id="welcomeScreen">
-            <img id="titleImage" src="Title.png" alt="Flower Catcher">
-            <img id="subtextImage" src="Sub Text.png" alt="Catch the falling flowers">
-            <img id="playButton" src="Play Button.png" alt="Play" onclick="startGame()">
+            <img id="titleImage" src="https://dl3.pushbulletusercontent.com/EG3WNBYH62xlWn7TfWCjA88QX3EBKCec/Title.png" alt="Flower Catcher">
+            <img id="subtextImage" src="https://dl3.pushbulletusercontent.com/ZXdt3lqusDIXM3CQ45hNAdkl9G8F1D9V/Sub%20Text.png" alt="Catch the falling flowers">
+            <img id="playButton" src="https://dl3.pushbulletusercontent.com/HL4GefaeXm75VDK7BPeY2Bhj8LTkRXdf/Play%20Button.png" alt="Play" onclick="startGame()">
         </div>
         
         <!-- Game Canvas -->
@@ -166,14 +166,79 @@
         <div id="gameOver">
             <h2>Game Over!</h2>
             <p id="finalScore">Your score: 0</p>
-            <img id="playAgain" src="Play Button.png" alt="Play Again">
+            <img id="playAgain" src="https://dl3.pushbulletusercontent.com/HL4GefaeXm75VDK7BPeY2Bhj8LTkRXdf/Play%20Button.png" alt="Play Again">
+        </div>
+
+        <!-- Coupon Modal -->
+        <div id="couponModal" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.7); display: none; justify-content: center; align-items: center; z-index: 100;">
+            <div style="background-color: white; padding: 20px; border-radius: 10px; text-align: center; max-width: 80%; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);">
+                <h2 id="couponTitle">SPECIAL OFFER</h2>
+                <p>Congratulations on your score!</p>
+                <div style="margin: 20px 0; background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%); padding: 15px; border-radius: 8px; border: 2px dashed #3498db;">
+                    <h3 id="discountText">20% OFF</h3>
+                    <p>Your coupon code:</p>
+                    <div style="font-family: monospace; font-size: 24px; font-weight: bold; background: white; padding: 10px; border-radius: 5px; margin: 10px 0; color: #e74c3c;" id="couponCode">FLOWERS20</div>
+                    <p id="couponDescription">Valid for 14 days on all products</p>
+                </div>
+                <button id="closeCouponButton" style="background-color: #ff69b4; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-size: 16px;">Got it!</button>
+            </div>
         </div>
     </div>
+
+    <!-- CleverTap Integration -->
+    <script type="text/javascript">
+        // Configuration variables for coupons - easy to modify
+        const COUPON_CONFIG = {
+            low: {
+                minScore: 0,
+                maxScore: 10,
+                title: "BRONZE OFFER",
+                discount: "10% OFF",
+                code: "FLOWERS10",
+                description: "Valid for 7 days on select items"
+            },
+            medium: {
+                minScore: 11,
+                maxScore: 20,
+                title: "SILVER OFFER",
+                discount: "20% OFF",
+                code: "FLOWERS20",
+                description: "Valid for 14 days on all products"
+            },
+            high: {
+                minScore: 21,
+                maxScore: 100,
+                title: "GOLD OFFER",
+                discount: "30% OFF",
+                code: "FLOWERS30",
+                description: "Valid for 30 days storewide"
+            }
+        };
+        
+        // CleverTap account credentials 
+        // TODO: Replace with your CleverTap account ID
+        const CLEVERTAP_ACCOUNT_ID = "YOUR_ACCOUNT_ID";
+    </script>
+
+    <!-- CleverTap SDK -->
+    <script type="text/javascript">
+        // Initialize CleverTap
+        var clevertap = {event:[], profile:[], account:[], onUserLogin:[], notifications:[], privacy:[]};
+        clevertap.account.push({"id": CLEVERTAP_ACCOUNT_ID});
+        (function () {
+            var wzrk = document.createElement('script');
+            wzrk.type = 'text/javascript';
+            wzrk.async = true;
+            wzrk.src = ('https:' == document.location.protocol ? 'https://d2r1yp2w7bby2u.cloudfront.net' : 'http://static.clevertap.com') + '/js/clevertap.min.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(wzrk, s);
+        })();
+    </script>
 
     <script>
         // Load images
         const bucketImage = new Image();
-        bucketImage.src = 'Bucket.png';
+        bucketImage.src = 'https://dl3.pushbulletusercontent.com/7OrQDOa4SKEjSzXLPBRPPAcVwhFn9hC5/Bucket.png';
 
         // Wait for bucket image to load to get natural dimensions
         bucketImage.onload = function() {
@@ -196,6 +261,12 @@
         const gameOverScreen = document.getElementById('gameOver');
         const finalScore = document.getElementById('finalScore');
         const playAgainButton = document.getElementById('playAgain');
+        const couponModal = document.getElementById('couponModal');
+        const couponTitle = document.getElementById('couponTitle');
+        const discountText = document.getElementById('discountText');
+        const couponCode = document.getElementById('couponCode');
+        const couponDescription = document.getElementById('couponDescription');
+        const closeCouponButton = document.getElementById('closeCouponButton');
         
         // Canvas setup
         const ctx = gameCanvas.getContext('2d');
@@ -235,6 +306,7 @@
             scoreBoard.style.display = 'flex';
             timerDisplay.style.display = 'block';
             gameOverScreen.style.display = 'none';
+            couponModal.style.display = 'none';
             
             score = 0;
             lives = 1;
@@ -471,8 +543,75 @@
             
             finalScore.textContent = `Your score: ${score}`;
             gameOverScreen.style.display = 'block';
+            
+            // Determine which coupon to award based on score
+            let coupon;
+            if (score <= COUPON_CONFIG.low.maxScore) {
+                coupon = COUPON_CONFIG.low;
+            } else if (score <= COUPON_CONFIG.medium.maxScore) {
+                coupon = COUPON_CONFIG.medium;
+            } else {
+                coupon = COUPON_CONFIG.high;
+            }
+            
+            // Send score and coupon data to CleverTap
+            if (window.clevertap) {
+                clevertap.event.push("Game_Completed", {
+                    "score": score,
+                    "gameMode": timeExpired ? "completed" : "lost",
+                    "timeRemaining": gameTimer,
+                    "couponTitle": coupon.title,
+                    "couponCode": coupon.code,
+                    "discountAmount": coupon.discount
+                });
+            }
+            
+            // Mobile app integration (similar to sample1.html)
+            const gameData = {
+                score: score,
+                couponTitle: coupon.title,
+                couponCode: coupon.code,
+                discountAmount: coupon.discount
+            };
+            
+            // For iOS WebView
+            if(window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.clevertap) {
+                const iosEvent = { 
+                    action: 'recordEventWithProps', 
+                    event: 'Game_Completed', 
+                    props: gameData
+                };
+                window.webkit.messageHandlers.clevertap.postMessage(iosEvent);
+            }
+            
+            // For Android WebView
+            if (window.CleverTap) {
+                window.CleverTap.pushEvent("Game_Completed", JSON.stringify(gameData));
+            }
+            
+            // Show coupon after a short delay
+            setTimeout(showCoupon, 1500, coupon);
+        }
+
+        function showCoupon(coupon) {
+            // Update coupon modal with current coupon details
+            document.getElementById('couponTitle').textContent = coupon.title;
+            document.getElementById('discountText').textContent = coupon.discount;
+            document.getElementById('couponCode').textContent = coupon.code;
+            document.getElementById('couponDescription').textContent = coupon.description;
+            
+            // Hide game over screen and show coupon
+            gameOverScreen.style.display = 'none';
+            const couponModal = document.getElementById('couponModal');
+            couponModal.style.display = 'flex';
         }
         
+        // Initialize coupon modal events
+        document.getElementById('closeCouponButton').addEventListener('click', function() {
+            document.getElementById('couponModal').style.display = 'none';
+            gameOverScreen.style.display = 'block';
+        });
+
         // Touch and mouse event handlers
         gameCanvas.addEventListener('touchstart', function(e) {
             e.preventDefault();
