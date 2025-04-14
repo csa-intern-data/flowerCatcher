@@ -39,7 +39,7 @@
             align-items: center;
             justify-content: center;
             z-index: 10;
-            background-image: url('Game UI elements/Thumbnail.jpg');
+            background-image: url('Thumbnail.jpg');
             background-size: cover;
             background-position: center;
         }
@@ -79,7 +79,7 @@
             transform: translateX(-50%);
             width: 200px;
             height: 60px;
-            background-image: url('Game UI elements/Score Board.png');
+            background-image: url('Score Board.png');
             background-size: contain;
             background-repeat: no-repeat;
             background-position: center;
@@ -142,13 +142,13 @@
 <body>
     <div id="gameContainer">
         <!-- Background -->
-        <img id="backgroundImage" src="Game UI elements/Background UI.jpg" alt="Background">
+        <img id="backgroundImage" src="Background UI.jpg" alt="Background">
         
         <!-- Welcome Screen -->
         <div id="welcomeScreen">
-            <img id="titleImage" src="Game UI elements/Title.png" alt="Flower Catcher">
-            <img id="subtextImage" src="Game UI elements/Sub Text.png" alt="Catch the falling flowers">
-            <img id="playButton" src="Game UI elements/Play Button.png" alt="Play" onclick="startGame()">
+            <img id="titleImage" src="Title.png" alt="Flower Catcher">
+            <img id="subtextImage" src="Sub Text.png" alt="Catch the falling flowers">
+            <img id="playButton" src="Play Button.png" alt="Play" onclick="startGame()">
         </div>
         
         <!-- Game Canvas -->
@@ -166,14 +166,14 @@
         <div id="gameOver">
             <h2>Game Over!</h2>
             <p id="finalScore">Your score: 0</p>
-            <img id="playAgain" src="Game UI elements/Play Button.png" alt="Play Again">
+            <img id="playAgain" src="Play Button.png" alt="Play Again">
         </div>
     </div>
 
     <script>
         // Load images
         const bucketImage = new Image();
-        bucketImage.src = 'Game UI elements/Bucket.png';
+        bucketImage.src = 'Bucket.png';
 
         // Wait for bucket image to load to get natural dimensions
         bucketImage.onload = function() {
