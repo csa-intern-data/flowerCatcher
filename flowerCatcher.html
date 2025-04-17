@@ -401,25 +401,23 @@ basketY = gameCanvas.height - basketHeight - 20;
 // Replace your existing setContainerSizeBasedOnThumbnail function
 function setContainerSizeBasedOnThumbnail() {
     // Make container flex-centered immediately for better visual experience
-    document.getElementById('gameContainer').style.margin = 'auto';
+    const container = document.getElementById('gameContainer');
+    container.style.margin = 'auto';
+    
+    // Reduce left shift from 15px to 5px
+    container.style.marginLeft = 'calc(50% - 5px)';
+    container.style.transform = 'translateX(-50%)';
     
     const thumbnailImage = new Image();
-    thumbnailImage.src = 'https://dl3.pushbulletusercontent.com/RsXmUVoiQIOnrX4GOOMMpANBCfgVd9py/thumbnail.png'; // Updated to CDN link
+    thumbnailImage.src = 'https://dl3.pushbulletusercontent.com/RsXmUVoiQIOnrX4GOOMMpANBCfgVd9py/thumbnail.png';
     
     thumbnailImage.onload = function() {
         const aspectRatio = thumbnailImage.naturalWidth / thumbnailImage.naturalHeight;
-        const container = document.getElementById('gameContainer');
-        
-        // Get available screen dimensions
         const availableHeight = window.innerHeight;
         const availableWidth = window.innerWidth;
-        
-        // Calculate max dimensions while maintaining aspect ratio
-        // Use 90% of available space to ensure some margin
         const maxHeight = Math.min(availableHeight * 0.9, 736); 
         const maxWidth = Math.min(availableWidth * 0.9, maxHeight * aspectRatio);
         
-        // If calculated width exceeds available width, recalculate
         if (maxWidth > availableWidth * 0.9) {
             const newWidth = availableWidth * 0.9;
             const newHeight = newWidth / aspectRatio;
@@ -430,20 +428,19 @@ function setContainerSizeBasedOnThumbnail() {
             container.style.height = maxHeight + 'px';
         }
         
-        // Center the container
         container.style.position = 'relative';
         container.style.margin = 'auto';
         
-        // After setting container size, setup canvas
         setupCanvas();
         console.log('Game container centered and sized:', 
                     container.style.width, 'x', container.style.height);
+        
+        // Ensure the reduced left shift persists
+        container.style.marginLeft = 'calc(50% - 5px)';
+        container.style.transform = 'translateX(-50%)';
     };
     
-    // Handle error case
     thumbnailImage.onerror = function() {
-        console.error('Could not load thumbnail for sizing');
-        // Fallback sizing
         const container = document.getElementById('gameContainer');
         container.style.width = '90vw';
         container.style.maxWidth = '414px';
@@ -451,6 +448,10 @@ function setContainerSizeBasedOnThumbnail() {
         container.style.maxHeight = '736px';
         container.style.margin = 'auto';
         setupCanvas();
+        
+        // Ensure the reduced left shift persists
+        container.style.marginLeft = 'calc(50% - 5px)';
+        container.style.transform = 'translateX(-50%)';
     };
 }
 
@@ -1254,6 +1255,16 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
     }
+});
+
+// Add this right after the window load event
+window.addEventListener('load', function() {
+    setContainerSizeBasedOnThumbnail();
+    
+    // Shift the game container left by 5px (reduced from 15px)
+    const gameContainer = document.getElementById('gameContainer');
+    gameContainer.style.marginLeft = '-5px';
+    gameContainer.style.position = 'relative'; // Ensure positioning works
 });
 </script>
 </body>
