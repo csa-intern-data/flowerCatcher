@@ -1,693 +1,1074 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Flower Catcher</title>
-    <style>
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-            touch-action: manipulation;
-            background-color: #f5f5f5; /* Light background around the game */
-        }
-        
-        #gameContainer {
-            position: relative;
-            width: 100%;
-            max-width: 414px; /* Standard mobile width */
-            height: 100%;
-            max-height: 736px; /* Standard mobile height */
-            margin: 0 auto; /* Center horizontally */
-            overflow: hidden;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-        }
-        
-        #backgroundImage {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            z-index: 1;
-        }
-        
-        #welcomeScreen {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 10;
-            background-image: url('https://dl3.pushbulletusercontent.com/HlUFKIRK9bwDrUaR0MM6tLauGpIi9NYM/Thumbnail.jpg');
-            background-size: cover;
-            background-position: center;
-        }
-        
-        #titleImage {
-            width: 80%;
-            max-width: 500px;
-            margin-bottom: 20px;
-        }
-        
-        #subtextImage {
-            width: 70%;
-            max-width: 400px;
-            margin-bottom: 40px;
-        }
-        
-        #playButton {
-            width: 150px;
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
-        
-        #playButton:hover {
-            transform: scale(1.05);
-        }
-        
-        #gameCanvas {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            z-index: 5;
-            display: none;
-        }
-        
-        #scoreBoard {
-            position: absolute;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 200px;
-            height: 60px;
-            background-image: url('https://dl3.pushbulletusercontent.com/O69AWgDoCCGTuZFXskiAW5jW2AYu0oVU/Score%20Board.png');
-            background-size: contain;
-            background-repeat: no-repeat;
-            background-position: center;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 20;
-            display: none;
-        }
-        
-        #scoreText {
-            font-size: 24px;
-            font-weight: bold;
-            color: #fff;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-            padding-bottom: 5px;
-        }
-        
-        #timerDisplay {
-            position: absolute;
-            top: 20px;
-            left: 20px; /* Changed from right: 20px to left: 20px */
-            background-color: rgba(255, 255, 255, 0.7);
-            padding: 10px 15px;
-            border-radius: 20px;
-            font-size: 20px;
-            font-weight: bold;
-            color: #ff69b4;
-            z-index: 20;
-            display: none;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-        }
-        
-        #gameOver {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background-color: rgba(255, 255, 255, 0.9);
-            padding: 20px;
-            border-radius: 10px;
-            text-align: center;
-            z-index: 30;
-            display: none;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-        }
-        
-        #finalScore {
-            font-size: 24px;
-            margin: 20px 0;
-            color: #ff69b4;
-        }
-        
-        #playAgain {
-            width: 150px;
-            cursor: pointer;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=414px, initial-scale=1.0">
+<title>Flower Catcher</title>
+<style>
+body {
+display: flex;
+justify-content: center;
+align-items: center;
+min-height: 100vh;
+font-family: Arial, sans-serif;
+margin: 0;
+padding: 0;
+overflow: hidden;
+touch-action: manipulation;
+background-color: #f5f5f5;
+width: 100%;
+height: 100vh;
+}
+
+#gameContainer {
+position: relative;
+width: 100%;
+max-width: 414px; /* Standard mobile width */
+height: 100%;
+max-height: 736px; /* Standard mobile height */
+margin: 0 auto; /* Center horizontally */
+overflow: hidden;
+box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+#backgroundImage {
+position: absolute;
+top: 0;
+left: 0;
+width: 100% !important; 
+height: 100% !important;
+object-fit: cover;
+z-index: 1;
+}
+
+#welcomeScreen {
+position: absolute;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+z-index: 10;
+background-image: url('https://dl3.pushbulletusercontent.com/RsXmUVoiQIOnrX4GOOMMpANBCfgVd9py/thumbnail.png');
+background-size: cover;
+background-position: center;
+}
+
+#playButton {
+width: 150px;
+cursor: pointer;
+transition: transform 0.2s;
+margin-top: 250px; /* This moves it down 100px */
+}
+
+#playButton:hover {
+transform: scale(1.05);
+}
+
+#gameCanvas {
+position: absolute;
+width: 100%;
+height: 100%;
+z-index: 5;
+display: none;
+}
+
+#scoreBoard {
+position: absolute;
+top: 20px;
+left: 50%;
+transform: translateX(-50%);
+width: 200px;
+height: 60px;
+background-image: url('https://dl3.pushbulletusercontent.com/O69AWgDoCCGTuZFXskiAW5jW2AYu0oVU/Score%20Board.png');
+background-size: contain;
+background-repeat: no-repeat;
+background-position: center;
+display: flex;
+align-items: center;
+justify-content: center;
+z-index: 20;
+display: none;
+}
+
+#scoreText {
+font-size: 24px;
+font-weight: bold;
+color: #fff;
+text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+padding-bottom: 5px;
+}
+
+#timerDisplay {
+position: absolute;
+top: 20px;
+left: 20px; /* Changed from right: 20px to left: 20px */
+background-color: rgba(255, 255, 255, 0.7);
+padding: 10px 15px;
+border-radius: 20px;
+font-size: 20px;
+font-weight: bold;
+color: #ff69b4;
+z-index: 20;
+display: none;
+box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+#gameOver {
+position: absolute;
+top: 50%;
+left: 50%;
+transform: translate(-50%, -50%);
+background-color: rgba(255, 255, 255, 0.9);
+padding: 20px;
+border-radius: 10px;
+text-align: center;
+z-index: 30;
+display: none;
+box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+#finalScore {
+font-size: 24px;
+margin: 20px 0;
+color: #ff69b4;
+}
+</style>
 </head>
 <body>
-    <div id="gameContainer">
-        <!-- Background -->
-        <img id="backgroundImage" src="https://dl3.pushbulletusercontent.com/EeCvNGCb29c3G05kNHLJMDezLnckrItz/Background%20UI.jpg" alt="Background">
-        
-        <!-- Welcome Screen -->
-        <div id="welcomeScreen">
-            <img id="titleImage" src="https://dl3.pushbulletusercontent.com/EG3WNBYH62xlWn7TfWCjA88QX3EBKCec/Title.png" alt="Flower Catcher">
-            <img id="subtextImage" src="https://dl3.pushbulletusercontent.com/ZXdt3lqusDIXM3CQ45hNAdkl9G8F1D9V/Sub%20Text.png" alt="Catch the falling flowers">
-            <img id="playButton" src="https://dl3.pushbulletusercontent.com/HL4GefaeXm75VDK7BPeY2Bhj8LTkRXdf/Play%20Button.png" alt="Play" onclick="startGame()">
-        </div>
-        
-        <!-- Game Canvas -->
-        <canvas id="gameCanvas"></canvas>
-        
-        <!-- Score Display -->
-        <div id="scoreBoard">
-            <div id="scoreText">0</div>
-        </div>
-        
-        <!-- Timer Display -->
-        <div id="timerDisplay">30s</div>
-        
-        <!-- Game Over Screen -->
-        <div id="gameOver">
-            <h2>Game Over!</h2>
-            <p id="finalScore">Your score: 0</p>
-            <img id="playAgain" src="https://dl3.pushbulletusercontent.com/HL4GefaeXm75VDK7BPeY2Bhj8LTkRXdf/Play%20Button.png" alt="Play Again">
-        </div>
+<div id="gameContainer">
+<!-- Background -->
+<img id="backgroundImage" src="https://dl3.pushbulletusercontent.com/Y4VH96a7Dcw9MeO7CrG5V9S47apaD26G/background.jpg" alt="Background">
 
-        <!-- Coupon Modal -->
-        <div id="couponModal" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.7); display: none; justify-content: center; align-items: center; z-index: 100;">
-            <div style="background-color: white; padding: 20px; border-radius: 10px; text-align: center; max-width: 80%; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);">
-                <h2 id="couponTitle">SPECIAL OFFER</h2>
-                <p>Congratulations on your score!</p>
-                <div style="margin: 20px 0; background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%); padding: 15px; border-radius: 8px; border: 2px dashed #3498db;">
-                    <h3 id="discountText">20% OFF</h3>
-                    <p>Your coupon code:</p>
-                    <div style="font-family: monospace; font-size: 24px; font-weight: bold; background: white; padding: 10px; border-radius: 5px; margin: 10px 0; color: #e74c3c;" id="couponCode">FLOWERS20</div>
-                    <p id="couponDescription">Valid for 14 days on all products</p>
-                </div>
-                <button id="closeCouponButton" style="background-color: #ff69b4; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-size: 16px;">Got it!</button>
-            </div>
-        </div>
-    </div>
+<!-- Welcome Screen -->
+<div id="welcomeScreen">
+<!-- Removing title and subtext images and just keeping the play button -->
+<img id="playButton" src="https://dl3.pushbulletusercontent.com/fpUNrHKeoIqBXTygYbizi3PIljTTN0p0/white%20play%20button.png" alt="Play" onclick="startGame()">
+</div>
 
-    <!-- CleverTap Integration -->
-    <script type="text/javascript">
-        // Configuration variables for coupons - easy to modify
-        const COUPON_CONFIG = {
-            low: {
-                minScore: 0,
-                maxScore: 10,
-                title: "BRONZE OFFER",
-                discount: "10% OFF",
-                code: "FLOWERS10",
-                description: "Valid for 7 days on select items"
-            },
-            medium: {
-                minScore: 11,
-                maxScore: 20,
-                title: "SILVER OFFER",
-                discount: "20% OFF",
-                code: "FLOWERS20",
-                description: "Valid for 14 days on all products"
-            },
-            high: {
-                minScore: 21,
-                maxScore: 100,
-                title: "GOLD OFFER",
-                discount: "30% OFF",
-                code: "FLOWERS30",
-                description: "Valid for 30 days storewide"
-            }
-        };
-        
-        // CleverTap account credentials 
-        // TODO: Replace with your CleverTap account ID
-        const CLEVERTAP_ACCOUNT_ID = "YOUR_ACCOUNT_ID";
-    </script>
+<!-- Game Canvas -->
+<canvas id="gameCanvas"></canvas>
 
-    <!-- CleverTap SDK -->
-    <script type="text/javascript">
-        // Initialize CleverTap
-        var clevertap = {event:[], profile:[], account:[], onUserLogin:[], notifications:[], privacy:[]};
-        clevertap.account.push({"id": CLEVERTAP_ACCOUNT_ID});
-        (function () {
-            var wzrk = document.createElement('script');
-            wzrk.type = 'text/javascript';
-            wzrk.async = true;
-            wzrk.src = ('https:' == document.location.protocol ? 'https://d2r1yp2w7bby2u.cloudfront.net' : 'http://static.clevertap.com') + '/js/clevertap.min.js';
-            var s = document.getElementsByTagName('script')[0];
-            s.parentNode.insertBefore(wzrk, s);
-        })();
-    </script>
+<!-- Score Display -->
+<div id="scoreBoard">
+<div id="scoreText">0</div>
+</div>
 
-    <script>
-        // Load images
-        const bucketImage = new Image();
-        bucketImage.src = 'https://dl3.pushbulletusercontent.com/7OrQDOa4SKEjSzXLPBRPPAcVwhFn9hC5/Bucket.png';
+<!-- Timer Display -->
+<div id="timerDisplay">30s</div>
 
-        // Wait for bucket image to load to get natural dimensions
-        bucketImage.onload = function() {
-            // Calculate proper aspect ratio based on natural dimensions
-            const aspectRatio = bucketImage.naturalWidth / bucketImage.naturalHeight;
-            basketWidth = Math.round(basketHeight * aspectRatio);
-            
-            if (gameActive) {
-                // If game is already running, adjust canvas
-                setupCanvas();
-            }
-        };
-        
-        // DOM Elements
-        const welcomeScreen = document.getElementById('welcomeScreen');
-        const gameCanvas = document.getElementById('gameCanvas');
-        const scoreBoard = document.getElementById('scoreBoard');
-        const scoreText = document.getElementById('scoreText');
-        const timerDisplay = document.getElementById('timerDisplay');
-        const gameOverScreen = document.getElementById('gameOver');
-        const finalScore = document.getElementById('finalScore');
-        const playAgainButton = document.getElementById('playAgain');
-        const couponModal = document.getElementById('couponModal');
-        const couponTitle = document.getElementById('couponTitle');
-        const discountText = document.getElementById('discountText');
-        const couponCode = document.getElementById('couponCode');
-        const couponDescription = document.getElementById('couponDescription');
-        const closeCouponButton = document.getElementById('closeCouponButton');
-        
-        // Canvas setup
-        const ctx = gameCanvas.getContext('2d');
-        
-        // Game variables
-        let score = 0;
-        let lives = 1;
-        let flowers = [];
-        let basketX;
-        let basketY;
-        let basketHeight = 140;
-        let basketWidth = 140;
-        let gameActive = false;
-        let animationId;
-        let baseFlowerSpeed = 3;
-        let spawnRate = 1000; // Reduced from 1500ms to 1000ms for more action
-        let lastSpawnTime = 0;
-        let touchStartX = 0;
-        let gameTimer = 30; // 30 seconds timer
-        let timerInterval;
-        
-        // Flower colors for the petal-only design (soft pastels that match mockup)
-        const flowerColors = ['#ff9ecf', '#ffb6e6', '#ffc8f0', '#ffd6f5', '#ffe4fa'];
-        
-        // Initialize canvas size to match window
-        function setupCanvas() {
-            // Set fixed dimensions rather than using window dimensions
-            const containerRect = document.getElementById('gameContainer').getBoundingClientRect();
-            gameCanvas.width = containerRect.width;
-            gameCanvas.height = containerRect.height;
-            
-            // Position basket proportionally
-            basketX = gameCanvas.width / 2;
-            basketY = gameCanvas.height - basketHeight - 20;
-        }
+<!-- Game Over Screen (Updated) -->
+<div id="gameOver">
+<h2>Game Over!</h2>
+<p id="finalScore">Your score: 0</p>
+<!-- Removing the play again button entirely -->
+</div>
 
-        // Add this function to determine Thumbnail image dimensions and set container size accordingly
-        function setContainerSizeBasedOnThumbnail() {
-            const thumbnailImage = new Image();
-            thumbnailImage.src = 'https://dl3.pushbulletusercontent.com/HlUFKIRK9bwDrUaR0MM6tLauGpIi9NYM/Thumbnail.jpg';
-            
-            thumbnailImage.onload = function() {
-                const aspectRatio = thumbnailImage.naturalWidth / thumbnailImage.naturalHeight;
-                const container = document.getElementById('gameContainer');
-                
-                // Set max-height based on screen height
-                const maxHeight = Math.min(window.innerHeight, 736);
-                container.style.height = maxHeight + 'px';
-                
-                // Set width based on aspect ratio, with maximum
-                const calculatedWidth = maxHeight * aspectRatio;
-                container.style.width = Math.min(calculatedWidth, window.innerWidth) + 'px';
-                
-                // After setting container size, setup canvas
-                setupCanvas();
-            };
-        }
+<!-- Coupon Modal -->
+<div id="couponModal" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.7); display: none; justify-content: center; align-items: center; z-index: 100;">
+<div style="background-color: white; padding: 20px; border-radius: 10px; text-align: center; max-width: 80%; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);">
+<h2 id="couponTitle">SPECIAL OFFER</h2>
+<p>Congratulations on your score!</p>
+<div style="margin: 20px 0; background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%); padding: 15px; border-radius: 8px; border: 2px dashed #3498db;">
+<h3 id="discountText">20% OFF</h3>
+<p>Your coupon code:</p>
+<div style="font-family: monospace; font-size: 24px; font-weight: bold; background: white; padding: 10px; border-radius: 5px; margin: 10px 0; color: #e74c3c;" id="couponCode">FLOWERS20</div>
+<p id="couponDescription">Valid for 14 days on all products</p>
+</div>
+<button id="closeCouponButton" style="background-color: #ff69b4; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-size: 16px;">Got it!</button>
+<button id="forcedCloseButton" style="position: absolute; top: 10px; right: 10px; background-color: red; color: white; border: none; border-radius: 50%; width: 30px; height: 30px;">X</button>
+</div>
+</div>
+</div>
 
-        // Call this function on window load
-        window.addEventListener('load', function() {
-            setContainerSizeBasedOnThumbnail();
-        });
-        
-        function startGame() {
-            setupCanvas();
-            welcomeScreen.style.display = 'none';
-            gameCanvas.style.display = 'block';
-            scoreBoard.style.display = 'flex';
-            timerDisplay.style.display = 'block';
-            gameOverScreen.style.display = 'none';
-            couponModal.style.display = 'none';
-            
-            score = 0;
-            lives = 1;
-            flowers = [];
-            basketX = gameCanvas.width / 2;
-            gameTimer = 30;
-            gameActive = true;
-            lastSpawnTime = Date.now();
-            
-            updateScore();
-            updateTimer();
-            
-            // Start the timer countdown
-            clearInterval(timerInterval);
-            timerInterval = setInterval(function() {
-                gameTimer--;
-                updateTimer();
-                
-                if (gameTimer <= 0) {
-                    clearInterval(timerInterval);
-                    endGame(true); // Pass true to indicate time expired
-                }
-            }, 1000);
-            
-            // Start the game loop
-            if (animationId) {
-                cancelAnimationFrame(animationId);
-            }
-            gameLoop();
-        }
-        
-        function gameLoop() {
-            clearCanvas();
-            spawnFlowers();
-            moveFlowers();
-            checkCollisions();
-            drawBasket();
-            drawFlowers();
-            
-            if (gameActive) {
-                animationId = requestAnimationFrame(gameLoop);
-            }
-        }
-        
-        function clearCanvas() {
-            ctx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
-        }
-        
-        function spawnFlowers() {
-            const currentTime = Date.now();
-            if (currentTime - lastSpawnTime > spawnRate) {
-                const flowerSize = Math.random() * 15 + 25; // Smaller flowers (25-40px)
-                const x = Math.random() * (gameCanvas.width - flowerSize);
-                const color = flowerColors[Math.floor(Math.random() * flowerColors.length)];
-                
-                // Random speed for each flower (some fast, some slow)
-                const speedMultiplier = Math.random() * 1.5 + 0.5; // 0.5x to 2.0x base speed
-                const speed = baseFlowerSpeed * speedMultiplier;
-                
-                // Occasionally spawn a "special" fast flower (gold color)
-                const isSpecial = Math.random() < 0.15; // 15% chance for special flower
-                
-                flowers.push({
-                    x: x,
-                    y: -flowerSize,
-                    size: flowerSize,
-                    color: isSpecial ? '#ffdf00' : color, // Golden color for special flowers
-                    speed: isSpecial ? speed * 2 : speed, // Special flowers move twice as fast
-                    counted: false,
-                    rotation: Math.random() * Math.PI * 2,
-                    rotationSpeed: Math.random() * 0.03 - 0.015,
-                    isSpecial: isSpecial,
-                    points: isSpecial ? 3 : 1 // Special flowers worth 3 points
-                });
-                
-                lastSpawnTime = currentTime;
-                
-                // Increase difficulty as game progresses
-                if (gameTimer < 20 && spawnRate > 700) {
-                    spawnRate = 700; // More flowers in the middle of the game
-                }
-                if (gameTimer < 10 && spawnRate > 500) {
-                    spawnRate = 500; // Even more flowers near the end
-                }
-                
-                // Also gradually increase base speed
-                if (gameTimer < 15) {
-                    baseFlowerSpeed = 4;
-                }
-                if (gameTimer < 5) {
-                    baseFlowerSpeed = 5;
-                }
-            }
-        }
-        
-        function moveFlowers() {
-            for (let i = 0; i < flowers.length; i++) {
-                const flower = flowers[i];
-                flower.y += flower.speed;
-                flower.rotation += flower.rotationSpeed;
-                
-                // Check if flower is missed
-                if (flower.y > gameCanvas.height && !flower.counted) {
-                    flowers.splice(i, 1);
-                    lives--;
-                    
-                    if (lives <= 0) {
-                        endGame();
-                    }
-                    i--;
-                }
-            }
-        }
-        
-        function checkCollisions() {
-            for (let i = 0; i < flowers.length; i++) {
-                const flower = flowers[i];
-                
-                // Simple collision detection with the basket
-                const flowerCenterX = flower.x + flower.size / 2;
-                const flowerBottom = flower.y + flower.size;
-                
-                if (flowerBottom > basketY && 
-                    flowerBottom < basketY + basketHeight &&
-                    flowerCenterX > basketX - basketWidth / 2 &&
-                    flowerCenterX < basketX + basketWidth / 2 &&
-                    !flower.counted) {
-                    
-                    flower.counted = true;
-                    flowers.splice(i, 1);
-                    
-                    // Add points based on flower type
-                    score += flower.points || 1;
-                    updateScore();
-                    
-                    // Visual feedback could be added here (like a particle effect)
-                    
-                    i--;
-                }
-            }
-        }
-        
-        function drawBasket() {
-            // Draw the bucket image with proper proportions
-            ctx.drawImage(
-                bucketImage, 
-                basketX - basketWidth / 2,
-                basketY, 
-                basketWidth, 
-                basketHeight
-            );
-        }
-        
-        function drawFlowers() {
-            flowers.forEach(flower => {
-                ctx.save();
-                ctx.translate(flower.x + flower.size/2, flower.y + flower.size/2);
-                ctx.rotate(flower.rotation);
-                
-                // Draw flower - circular shape with more natural looking petals
-                const innerRadius = flower.size/5;
-                const outerRadius = flower.size/2;
-                
-                // Draw larger central circle as the main flower body
-                ctx.fillStyle = flower.color;
-                ctx.beginPath();
-                ctx.arc(0, 0, outerRadius * 0.6, 0, Math.PI * 2);
-                ctx.fill();
-                
-                // Draw extra petals around the edge to make it look more like a flower
-                const petalCount = 5;  // Fixed petal count for consistency
-                
-                for (let i = 0; i < petalCount; i++) {
-                    const angle = (i * 2 * Math.PI / petalCount);
-                    const petalX = Math.cos(angle) * (outerRadius * 0.7);
-                    const petalY = Math.sin(angle) * (outerRadius * 0.7);
-                    
-                    ctx.beginPath();
-                    ctx.arc(petalX, petalY, outerRadius * 0.5, 0, Math.PI * 2);
-                    ctx.fill();
-                }
-                
-                // Draw flower center
-                // Special flowers have a sparkly white center
-                ctx.fillStyle = flower.isSpecial ? '#ffffff' : '#ffff00';
-                ctx.beginPath();
-                ctx.arc(0, 0, innerRadius, 0, Math.PI * 2);
-                ctx.fill();
-                
-                // Add a sparkle effect to special flowers
-                if (flower.isSpecial) {
-                    ctx.strokeStyle = '#ffffff';
-                    ctx.lineWidth = 1;
-                    for (let i = 0; i < 4; i++) {
-                        const angle = i * Math.PI / 2;
-                        ctx.beginPath();
-                        ctx.moveTo(0, 0);
-                        ctx.lineTo(Math.cos(angle) * outerRadius * 1.2, Math.sin(angle) * outerRadius * 1.2);
-                        ctx.stroke();
-                    }
-                }
-                
-                ctx.restore();
-            });
-        }
-        
-        function updateScore() {
-            scoreText.textContent = score.toString();
-        }
-        
-        function updateTimer() {
-            timerDisplay.textContent = `${gameTimer}s`;
-            
-            // Make timer red when it's getting low
-            if (gameTimer <= 5) {
-                timerDisplay.style.color = '#ff0000';
-                timerDisplay.style.fontWeight = 'bold';
-            } else {
-                timerDisplay.style.color = '#ff69b4';
-            }
-        }
-        
-        function endGame(timeExpired = false) {
-            gameActive = false;
-            clearInterval(timerInterval);
-            
-            // Update the heading text based on how the game ended
-            const gameOverHeading = document.querySelector('#gameOver h2');
-            if (timeExpired) {
-                gameOverHeading.textContent = 'Game Finished!';
-            } else {
-                gameOverHeading.textContent = 'Game Over!';
-            }
-            
-            finalScore.textContent = `Your score: ${score}`;
-            gameOverScreen.style.display = 'block';
-            
-            // Determine which coupon to award based on score
-            let coupon;
-            if (score <= COUPON_CONFIG.low.maxScore) {
-                coupon = COUPON_CONFIG.low;
-            } else if (score <= COUPON_CONFIG.medium.maxScore) {
-                coupon = COUPON_CONFIG.medium;
-            } else {
-                coupon = COUPON_CONFIG.high;
-            }
-            
-            // Send score and coupon data to CleverTap
-            if (window.clevertap) {
-                clevertap.event.push("Game_Completed", {
-                    "score": score,
-                    "coupon_code": coupon.code,
-                    "coupon_discount": coupon.discount,
-                    "coupon_title": coupon.title,
-                    "game_result": timeExpired ? "completed" : "lost"
-                });
-            }
+<!-- CleverTap Integration -->
+<script type="text/javascript">
+// Check if we're in an iframe
+const isInIframe = window !== window.parent;
+if (isInIframe) {
+// Force full dimensions when in iframe
+document.body.style.width = '100%';
+document.body.style.height = '100%';
+document.body.style.margin = '0';
+document.body.style.padding = '0';
+document.body.style.overflow = 'hidden';
+}
 
-            // Then after 1.5 seconds, the coupon is shown
-            setTimeout(showCoupon, 1500, coupon);
-        }
+// Replace the existing COUPON_CONFIG with a single coupon definition
+const COUPON = {
+title: "SPECIAL OFFER",
+discount: "30% OFF",
+code: "FLOWERS30",
+description: "Valid for 30 days on all items"
+};
 
-        function showCoupon(coupon) {
-            // Update coupon modal with current coupon details
-            document.getElementById('couponTitle').textContent = coupon.title;
-            document.getElementById('discountText').textContent = coupon.discount;
-            document.getElementById('couponCode').textContent = coupon.code;
-            document.getElementById('couponDescription').textContent = coupon.description;
-            
-            // Hide game over screen and show coupon
-            gameOverScreen.style.display = 'none';
-            const couponModal = document.getElementById('couponModal');
-            couponModal.style.display = 'flex';
-        }
-        
-        // Initialize coupon modal events
-        document.getElementById('closeCouponButton').addEventListener('click', function() {
-            document.getElementById('couponModal').style.display = 'none';
-            gameOverScreen.style.display = 'block';
-        });
+// Required score to win the coupon
+const REQUIRED_SCORE = 5; // Changed from 20 to 5 for easier testing
 
-        // Touch and mouse event handlers
-        gameCanvas.addEventListener('touchstart', function(e) {
-            e.preventDefault();
-            touchStartX = e.touches[0].clientX;
-        });
-        
-        gameCanvas.addEventListener('touchmove', function(e) {
-            e.preventDefault();
-            if (gameActive) {
-                const touchX = e.touches[0].clientX;
-                const diffX = touchX - touchStartX;
-                basketX += diffX;
-                
-                // Keep basket within canvas boundaries
-                if (basketX < basketWidth / 2) {
-                    basketX = basketWidth / 2;
-                } else if (basketX > gameCanvas.width - basketWidth / 2) {
-                    basketX = gameCanvas.width - basketWidth / 2;
-                }
-                
-                touchStartX = touchX;
-            }
-        });
-        
-        gameCanvas.addEventListener('mousemove', function(e) {
-            if (gameActive) {
-                const rect = gameCanvas.getBoundingClientRect();
-                basketX = e.clientX - rect.left;
-                
-                // Keep basket within canvas boundaries
-                if (basketX < basketWidth / 2) {
-                    basketX = basketWidth / 2;
-                } else if (basketX > gameCanvas.width - basketWidth / 2) {
-                    basketX = gameCanvas.width - basketWidth / 2;
-                }
-            }
-        });
-        
-        // Add event listener for play again button
-        playAgainButton.addEventListener('click', startGame);
-        
-        // Handle window resize
-        window.addEventListener('resize', function() {
-            if (gameActive) {
-                // Save current ratio of basket position to canvas width
-                const basketRatio = basketX / gameCanvas.width;
-                
-                setupCanvas();
-                
-                // Apply the same ratio to the new canvas width
-                basketX = basketRatio * gameCanvas.width;
-            } else {
-                setupCanvas();
-            }
-        });
-        
-        // Initialize canvas size when images are loaded
-        window.addEventListener('load', setupCanvas);
-    </script>
+// CleverTap account credentials 
+// TODO: Replace with your CleverTap account ID
+</script>
+
+<!-- CleverTap SDK -->
+<script type="text/javascript">
+// Initialize CleverTap
+var clevertap = {event:[], profile:[], account:[], onUserLogin:[], notifications:[], privacy:[]};
+</script>
+
+<script>
+// Load images
+const bucketImage = new Image();
+bucketImage.src = 'https://dl3.pushbulletusercontent.com/voZRL6sMOb90i3VfqrazG7ZWitrghuNp/basket.png';
+
+// Wait for bucket image to load to get natural dimensions
+bucketImage.onload = function() {
+// Calculate proper aspect ratio based on natural dimensions
+const aspectRatio = bucketImage.naturalWidth / bucketImage.naturalHeight;
+basketWidth = Math.round(basketHeight * aspectRatio);
+
+if (gameActive) {
+// If game is already running, adjust canvas
+setupCanvas();
+}
+};
+
+// DOM Elements
+const welcomeScreen = document.getElementById('welcomeScreen');
+const gameCanvas = document.getElementById('gameCanvas');
+const scoreBoard = document.getElementById('scoreBoard');
+const scoreText = document.getElementById('scoreText');
+const timerDisplay = document.getElementById('timerDisplay');
+const gameOverScreen = document.getElementById('gameOver');
+const finalScore = document.getElementById('finalScore');
+const couponModal = document.getElementById('couponModal');
+const couponTitle = document.getElementById('couponTitle');
+const discountText = document.getElementById('discountText');
+const couponCode = document.getElementById('couponCode');
+const couponDescription = document.getElementById('couponDescription');
+const closeCouponButton = document.getElementById('closeCouponButton');
+
+// Function to generate or get a user ID
+function getUserId() {
+let userId = localStorage.getItem('flowergame_user_id');
+if (!userId) {
+// Create a random user ID and store it
+userId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+localStorage.setItem('flowergame_user_id', userId);
+}
+console.log("Using user ID:", userId);
+return userId;
+}
+
+// Add this function after your getUserId function (around line 242)
+function trackEvent(eventName, eventData) {
+// Always include user ID in event data
+if (!eventData.hasOwnProperty("user_id")) {
+const userId = getUserId();
+eventData.user_id = userId;
+}
+
+// Add timestamp for better tracking
+eventData.timestamp = new Date().toISOString();
+
+console.log(`Tracking event: ${eventName}`, eventData);
+
+// Web SDK implementation
+try {
+if (window.clevertap) {
+clevertap.event.push(eventName, eventData);
+console.log(`${eventName} sent via Web SDK`);
+}
+} catch (e) {
+console.error(`Error sending ${eventName} via Web SDK:`, e);
+}
+
+// Android WebView implementation
+try {
+if (window.CleverTap) {
+window.CleverTap.pushEvent(eventName, JSON.stringify(eventData));
+console.log(`${eventName} sent via Android WebView`);
+}
+} catch (e) {
+console.error(`Error sending ${eventName} via Android WebView:`, e);
+}
+
+// iOS WebView implementation
+try {
+if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.clevertap) {
+var iosevent = { 
+action: 'recordEventWithProps', 
+event: eventName, 
+props: eventData
+};
+window.webkit.messageHandlers.clevertap.postMessage(iosevent);
+console.log(`${eventName} sent via iOS WebView`);
+}
+} catch (e) {
+console.error(`Error sending ${eventName} via iOS WebView:`, e);
+}
+}
+
+// Canvas setup
+const ctx = gameCanvas.getContext('2d');
+
+// Game variables
+let score = 0;
+let lives = 1;
+let flowers = [];
+let basketX;
+let basketY;
+let basketHeight = 140;
+let basketWidth = 140;
+let gameActive = false;
+let animationId;
+let baseFlowerSpeed = 3;
+let spawnRate = 1000; // Reduced from 1500ms to 1000ms for more action
+let lastSpawnTime = 0;
+let touchStartX = 0;
+let gameTimer = 30; // 30 seconds timer
+let timerInterval;
+
+// Flower colors for the petal-only design (soft pastels that match mockup)
+const flowerColors = [
+'#ff5599', // Brighter pink
+'#ff3377', // Vibrant rose
+'#ff00aa', // Hot pink
+'#ee0088', // Magenta
+'#cc3399' // Deep pink
+];
+
+// Initialize canvas size to match window
+function setupCanvas() {
+// Simpler, more direct approach
+gameCanvas.width = document.getElementById('gameContainer').offsetWidth;
+gameCanvas.height = document.getElementById('gameContainer').offsetHeight;
+basketX = gameCanvas.width / 2;
+basketY = gameCanvas.height - basketHeight - 20;
+}
+
+// Replace your existing setContainerSizeBasedOnThumbnail function
+function setContainerSizeBasedOnThumbnail() {
+// Make container flex-centered immediately for better visual experience
+document.getElementById('gameContainer').style.margin = 'auto';
+
+const thumbnailImage = new Image();
+thumbnailImage.src = 'https://dl3.pushbulletusercontent.com/RsXmUVoiQIOnrX4GOOMMpANBCfgVd9py/thumbnail.png'; // Updated to CDN link
+
+thumbnailImage.onload = function() {
+const aspectRatio = thumbnailImage.naturalWidth / thumbnailImage.naturalHeight;
+const container = document.getElementById('gameContainer');
+
+// Get available screen dimensions
+const availableHeight = window.innerHeight;
+const availableWidth = window.innerWidth;
+
+// Calculate max dimensions while maintaining aspect ratio
+// Use 90% of available space to ensure some margin
+const maxHeight = Math.min(availableHeight * 0.9, 736); 
+const maxWidth = Math.min(availableWidth * 0.9, maxHeight * aspectRatio);
+
+// If calculated width exceeds available width, recalculate
+if (maxWidth > availableWidth * 0.9) {
+const newWidth = availableWidth * 0.9;
+const newHeight = newWidth / aspectRatio;
+container.style.width = newWidth + 'px';
+container.style.height = newHeight + 'px';
+} else {
+container.style.width = maxWidth + 'px';
+container.style.height = maxHeight + 'px';
+}
+
+// Center the container
+container.style.position = 'relative';
+container.style.margin = 'auto';
+
+// After setting container size, setup canvas
+setupCanvas();
+console.log('Game container centered and sized:', 
+container.style.width, 'x', container.style.height);
+};
+
+// Handle error case
+thumbnailImage.onerror = function() {
+console.error('Could not load thumbnail for sizing');
+// Fallback sizing
+const container = document.getElementById('gameContainer');
+container.style.width = '90vw';
+container.style.maxWidth = '414px';
+container.style.height = '90vh';
+container.style.maxHeight = '736px';
+container.style.margin = 'auto';
+setupCanvas();
+};
+}
+
+// Call this function on window load
+window.addEventListener('load', function() {
+setContainerSizeBasedOnThumbnail();
+});
+
+function startGame() {
+// Set user identity in CleverTap
+const userId = getUserId();
+
+console.log("Setting user identity:", userId);
+
+try {
+if (window.clevertap) {
+clevertap.onUserLogin.push({
+"Site": {
+"Identity": userId,
+"Name": "Game Player " + userId.substr(-4)
+}
+});
+console.log("Identity set via Web SDK");
+
+// Track game start event
+trackEvent("Game_Started", {
+"user_id": userId,
+"device_type": navigator.userAgent.includes("Mobile") ? "Mobile" : "Desktop",
+"session_id": Date.now().toString()
+});
+}
+} catch (e) {
+console.error("Error setting identity via Web SDK:", e);
+}
+
+setupCanvas();
+welcomeScreen.style.display = 'none';
+gameCanvas.style.display = 'block';
+scoreBoard.style.display = 'flex';
+timerDisplay.style.display = 'block';
+gameOverScreen.style.display = 'none';
+couponModal.style.display = 'none';
+
+score = 0;
+lives = 1;
+flowers = [];
+basketX = gameCanvas.width / 2;
+gameTimer = 30;
+gameActive = true;
+lastSpawnTime = Date.now();
+
+updateScore();
+updateTimer();
+
+// Start the timer countdown
+clearInterval(timerInterval);
+timerInterval = setInterval(function() {
+gameTimer--;
+updateTimer();
+
+if (gameTimer <= 0) {
+clearInterval(timerInterval);
+endGame(true); // Pass true to indicate time expired
+}
+}, 1000);
+
+// Start the game loop
+if (animationId) {
+cancelAnimationFrame(animationId);
+}
+gameLoop();
+}
+
+function gameLoop() {
+clearCanvas();
+spawnFlowers();
+moveFlowers();
+checkCollisions();
+drawBasket();
+drawFlowers();
+
+if (gameActive) {
+animationId = requestAnimationFrame(gameLoop);
+}
+}
+
+function clearCanvas() {
+ctx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
+}
+
+function spawnFlowers() {
+const currentTime = Date.now();
+if (currentTime - lastSpawnTime > spawnRate) {
+const flowerSize = Math.random() * 15 + 25; // Smaller flowers (25-40px)
+const x = Math.random() * (gameCanvas.width - flowerSize);
+const color = flowerColors[Math.floor(Math.random() * flowerColors.length)];
+
+// Random speed for each flower (some fast, some slow)
+const speedMultiplier = Math.random() * 1.5 + 0.5; // 0.5x to 2.0x base speed
+const speed = baseFlowerSpeed * speedMultiplier;
+
+// Occasionally spawn a "special" fast flower (gold color)
+const isSpecial = Math.random() < 0.15; // 15% chance for special flower
+
+flowers.push({
+x: x,
+y: -flowerSize,
+size: flowerSize,
+color: isSpecial ? '#ffdf00' : color, // Golden color for special flowers
+speed: isSpecial ? speed * 2 : speed, // Special flowers move twice as fast
+counted: false,
+rotation: Math.random() * Math.PI * 2,
+rotationSpeed: Math.random() * 0.03 - 0.015,
+isSpecial: isSpecial,
+points: isSpecial ? 3 : 1 // Special flowers worth 3 points
+});
+
+lastSpawnTime = currentTime;
+
+// Increase difficulty as game progresses
+if (gameTimer < 20 && spawnRate > 700) {
+spawnRate = 700; // More flowers in the middle of the game
+}
+if (gameTimer < 10 && spawnRate > 500) {
+spawnRate = 500; // Even more flowers near the end
+}
+
+// Also gradually increase base speed
+if (gameTimer < 15) {
+baseFlowerSpeed = 4;
+}
+if (gameTimer < 5) {
+baseFlowerSpeed = 5;
+}
+}
+}
+
+function moveFlowers() {
+for (let i = 0; i < flowers.length; i++) {
+const flower = flowers[i];
+flower.y += flower.speed;
+flower.rotation += flower.rotationSpeed;
+
+// Check if flower is missed
+if (flower.y > gameCanvas.height && !flower.counted) {
+flowers.splice(i, 1);
+lives--;
+
+if (lives <= 0) {
+endGame();
+}
+i--;
+}
+}
+}
+
+function checkCollisions() {
+for (let i = 0; i < flowers.length; i++) {
+const flower = flowers[i];
+
+// Simple collision detection with the basket
+const flowerCenterX = flower.x + flower.size / 2;
+const flowerBottom = flower.y + flower.size;
+
+if (flowerBottom > basketY && 
+flowerBottom < basketY + basketHeight &&
+flowerCenterX > basketX - basketWidth / 2 &&
+flowerCenterX < basketX + basketWidth / 2 &&
+!flower.counted) {
+
+flower.counted = true;
+flowers.splice(i, 1);
+
+// Add points based on flower type
+score += flower.points || 1;
+updateScore();
+
+// Visual feedback could be added here (like a particle effect)
+
+i--;
+}
+}
+}
+
+function drawBasket() {
+// Draw the bucket image with proper proportions
+ctx.drawImage(
+bucketImage, 
+basketX - basketWidth / 2,
+basketY, 
+basketWidth, 
+basketHeight
+);
+}
+
+function drawFlowers() {
+flowers.forEach(flower => {
+ctx.save();
+ctx.translate(flower.x + flower.size/2, flower.y + flower.size/2);
+ctx.rotate(flower.rotation);
+
+// Draw flower - circular shape with more natural looking petals
+const innerRadius = flower.size/5;
+const outerRadius = flower.size/2;
+
+// Draw larger central circle as the main flower body
+ctx.fillStyle = flower.color;
+ctx.beginPath();
+ctx.arc(0, 0, outerRadius * 0.6, 0, Math.PI * 2);
+ctx.fill();
+
+// Draw extra petals around the edge to make it look more like a flower
+const petalCount = 5; // Fixed petal count for consistency
+
+for (let i = 0; i < petalCount; i++) {
+const angle = (i * 2 * Math.PI / petalCount);
+const petalX = Math.cos(angle) * (outerRadius * 0.7);
+const petalY = Math.sin(angle) * (outerRadius * 0.7);
+
+ctx.beginPath();
+ctx.arc(petalX, petalY, outerRadius * 0.5, 0, Math.PI * 2);
+ctx.fill();
+}
+
+// Draw flower center
+// Special flowers have a sparkly white center
+ctx.fillStyle = flower.isSpecial ? '#ffffff' : '#ffff00';
+ctx.beginPath();
+ctx.arc(0, 0, innerRadius, 0, Math.PI * 2);
+ctx.fill();
+
+// Add a sparkle effect to special flowers
+if (flower.isSpecial) {
+ctx.strokeStyle = '#ffffff';
+ctx.lineWidth = 1;
+for (let i = 0; i < 4; i++) {
+const angle = i * Math.PI / 2;
+ctx.beginPath();
+ctx.moveTo(0, 0);
+ctx.lineTo(Math.cos(angle) * outerRadius * 1.2, Math.sin(angle) * outerRadius * 1.2);
+ctx.stroke();
+}
+}
+
+ctx.restore();
+});
+}
+
+function updateScore() {
+scoreText.textContent = score.toString();
+scoreBoard.style.display = 'flex';
+}
+
+function updateTimer() {
+timerDisplay.textContent = `${gameTimer}s`;
+
+// Make timer red when it's getting low
+if (gameTimer <= 5) {
+timerDisplay.style.color = '#ff0000';
+timerDisplay.style.fontWeight = 'bold';
+} else {
+timerDisplay.style.color = '#ff69b4';
+}
+}
+
+// Update endGame function
+function endGame(timeExpired = false) {
+gameActive = false;
+clearInterval(timerInterval);
+
+console.log(`Game ended with score: ${score}, required: ${REQUIRED_SCORE}`);
+
+// Update the heading text based on how the game ended
+const gameOverHeading = document.querySelector('#gameOver h2');
+if (timeExpired) {
+gameOverHeading.textContent = 'Game Finished!';
+} else {
+gameOverHeading.textContent = 'Game Over!';
+}
+
+finalScore.textContent = `Your score: ${score}`;
+
+// Track game completion event
+const userId = getUserId();
+trackEvent("Game_Completed", {
+"user_id": userId,
+"score": score,
+"game_result": timeExpired ? "completed" : "lost",
+"coupon_earned": score >= REQUIRED_SCORE,
+"play_duration_seconds": 30 - gameTimer
+});
+
+// Show coupon immediately if score is high enough
+if (score >= REQUIRED_SCORE) {
+console.log("Score meets requirement! Showing coupon...");
+// Show coupon immediately instead of with timeout
+showCoupon();
+} else {
+console.log("Score too low for coupon, showing game over screen");
+gameOverScreen.style.display = 'block';
+}
+}
+
+function showCoupon() {
+console.log("Showing coupon modal - FIXED version");
+
+// Ensure the coupon modal is properly removed from display:none
+const couponModal = document.getElementById('couponModal');
+if (!couponModal) {
+console.error("Coupon modal not found!");
+return;
+}
+
+// Update coupon details
+document.getElementById('couponTitle').textContent = COUPON.title;
+document.getElementById('discountText').textContent = COUPON.discount;
+document.getElementById('couponCode').textContent = COUPON.code;
+document.getElementById('couponDescription').textContent = COUPON.description;
+
+// Hide any other screens
+if (gameOverScreen) gameOverScreen.style.display = 'none';
+
+// Show coupon modal with correct display properties
+couponModal.style.opacity = '1';
+couponModal.style.visibility = 'visible';
+couponModal.style.display = 'flex';
+
+// Ensure buttons are visible and working
+document.getElementById('closeCouponButton').style.opacity = '1';
+document.getElementById('forcedCloseButton').style.opacity = '1';
+
+// Setup close button handlers
+setupCloseButtons();
+
+console.log("Coupon modal display properties:", {
+display: couponModal.style.display,
+opacity: couponModal.style.opacity,
+visibility: couponModal.style.visibility
+});
+
+// Track event
+trackEvent("Coupon_Shown", {
+"coupon_code": COUPON.code,
+"coupon_discount": COUPON.discount,
+"coupon_title": COUPON.title,
+"score": score
+});
+}
+
+// Replace both close button event handlers with this unified version
+function setupCloseButtons() {
+console.log("Setting up close buttons - CleverTap version");
+
+// Remove old event listeners safely
+const oldMainButton = document.getElementById('closeCouponButton');
+const oldForceButton = document.getElementById('forcedCloseButton');
+
+const newMainButton = oldMainButton.cloneNode(true);
+const newForceButton = oldForceButton.cloneNode(true);
+
+if (oldMainButton.parentNode) {
+oldMainButton.parentNode.replaceChild(newMainButton, oldMainButton);
+}
+
+if (oldForceButton.parentNode) {
+oldForceButton.parentNode.replaceChild(newForceButton, oldForceButton);
+}
+
+// Store notification object for click tracking
+var notificationObj;
+if (window.parent && window.parent.clevertap && window.parent.clevertap.popupCallback) {
+window.parent.clevertap.popupCallback = (notificationData) => {
+notificationObj = notificationData;
+console.log("Received notification data from CleverTap");
+};
+}
+
+// MAIN BUTTON - Got It
+newMainButton.setAttribute('wzrk_c2a', 'true'); // Add attribute for click tracking
+newMainButton.addEventListener('click', function() {
+console.log("Main close button clicked - CleverTap version");
+
+// Track event
+trackEvent("Coupon_Claimed", {
+"user_id": getUserId(),
+"score": score,
+"coupon_code": COUPON.code,
+"coupon_discount": COUPON.discount,
+"coupon_title": COUPON.title,
+"coupon_description": COUPON.description
+});
+
+// Try to raise click event for custom HTML popup
+try {
+if (window.parent && window.parent.clevertap && window.parent.clevertap.raisePopupNotificationClicked && notificationObj) {
+window.parent.clevertap.raisePopupNotificationClicked(notificationObj);
+console.log("Raised popup notification clicked");
+}
+} catch (e) {
+console.error("Error raising notification clicked:", e);
+}
+
+// Method 1: Remove parent elements as per documentation
+try {
+const wrapper = window.parent.document.getElementById('wizParDiv0') || 
+window.parent.document.getElementById('wizParDiv2') ||
+window.parent.document.getElementById('intentPreview');
+
+const overlay = window.parent.document.getElementById('intentOpacityDiv');
+
+if (wrapper) {
+wrapper.remove();
+console.log("Removed wrapper element");
+}
+
+if (overlay) {
+overlay.remove();
+console.log("Removed overlay element");
+}
+} catch (e) {
+console.error("Error removing parent elements:", e);
+}
+
+// Method 2: Use CleverTap's standard close mechanism
+closeAllPossibleWays();
+
+// Fallback message if everything else fails
+document.body.innerHTML = `
+<div style="display:flex;justify-content:center;align-items:center;height:100%;text-align:center;">
+<div>
+<h2>Thank you for playing!</h2>
+<p>Your coupon has been saved.</p>
+<button onclick="closeAllPossibleWays()" style="background-color: red; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-size: 16px; margin-top: 20px;">Close</button>
+</div>
+</div>`;
+});
+
+// FORCE CLOSE BUTTON - X in corner
+newForceButton.setAttribute('wzrk_c2a', 'true'); // Add attribute for click tracking
+newForceButton.addEventListener('click', function() {
+console.log("Force close button clicked - CleverTap version");
+
+// Try to close using all possible CleverTap methods
+closeAllPossibleWays();
+
+// Fallback message if everything else fails
+document.body.innerHTML = `
+<div style="display:flex;justify-content:center;align-items:center;height:100%;text-align:center;">
+<div>
+<h2>Thank you for playing!</h2>
+<p>Maybe next time!</p>
+<button onclick="closeAllPossibleWays()" style="background-color: red; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-size: 16px; margin-top: 20px;">Close</button>
+</div>
+</div>`;
+});
+
+console.log("Close buttons setup complete - CleverTap version");
+}
+
+// Helper function to try all possible closing methods
+function closeAllPossibleWays() {
+console.log("Attempting all possible close methods");
+
+// Method 1: Standard CleverTap removal approach
+try {
+// Based on documentation, for different template types
+const types = ['wizParDiv0', 'wizParDiv2', 'intentPreview'];
+for (let id of types) {
+const element = window.parent.document.getElementById(id);
+if (element) {
+element.remove();
+console.log(`Removed ${id}`);
+}
+}
+
+// Remove overlay if it exists
+const overlay = window.parent.document.getElementById('intentOpacityDiv');
+if (overlay) overlay.remove();
+} catch (e) {
+console.error("Standard removal failed:", e);
+}
+
+// Method 2: Use CleverTap's dismissal
+try {
+if (window.parent.clevertap && typeof window.parent.clevertap.dismissSpamControl === 'function') {
+window.parent.clevertap.dismissSpamControl = true;
+console.log("Set dismissSpamControl to true");
+}
+} catch (e) {
+console.error("Setting dismissSpamControl failed:", e);
+}
+
+// Method 3: Try a different approach based on common iframe techniques
+try {
+window.parent.postMessage({"closeNotif": true}, "*");
+console.log("Posted closeNotif message to parent");
+} catch (e) {
+console.error("Posting message failed:", e);
+}
+
+// Method 4: Try window.close as last resort
+try {
+window.close();
+} catch (e) {
+console.error("Window close failed:", e);
+}
+}
+
+// Make closeAllPossibleWays globally accessible for the closing buttons
+window.closeAllPossibleWays = closeAllPossibleWays;
+
+// Clean up the initialization code by consolidating event listeners
+document.addEventListener('DOMContentLoaded', function() {
+console.log("UNIFIED DOM Content Loaded - Running master initialization");
+
+// Make sure play button works
+const playButton = document.getElementById('playButton');
+if (playButton) {
+playButton.addEventListener('click', function() {
+console.log('Play button clicked');
+startGame();
+});
+}
+
+// Set up container size and centering
+setContainerSizeBasedOnThumbnail();
+
+// Setup close buttons
+setupCloseButtons();
+
+// Update image paths to CDN links
+document.getElementById('backgroundImage').src = 'https://dl3.pushbulletusercontent.com/Y4VH96a7Dcw9MeO7CrG5V9S47apaD26G/background.jpg';
+document.querySelector('#welcomeScreen').style.backgroundImage = "url('https://dl3.pushbulletusercontent.com/RsXmUVoiQIOnrX4GOOMMpANBCfgVd9py/thumbnail.png')";
+document.querySelectorAll('#playButton').forEach(button => {
+button.src = 'https://dl3.pushbulletusercontent.com/fpUNrHKeoIqBXTygYbizi3PIljTTN0p0/white%20play%20button.png';
+});
+
+// Log key elements to verify they exist
+console.log("Elements verification:", {
+couponModal: !!document.getElementById('couponModal'),
+closeCouponButton: !!document.getElementById('closeCouponButton'),
+forcedCloseButton: !!document.getElementById('forcedCloseButton'),
+gameOver: !!document.getElementById('gameOver'),
+scoreBoard: !!document.getElementById('scoreBoard'),
+scoreText: !!document.getElementById('scoreText')
+});
+
+// Update coupon modal styling to match the yellow design from the image
+
+// First, find the existing coupon modal div and update it
+// Update the main modal background to yellow
+const couponModalContent = document.querySelector('#couponModal > div');
+if (couponModalContent) {
+couponModalContent.style.backgroundColor = '#FFDB58'; // Golden yellow
+couponModalContent.style.padding = '25px';
+couponModalContent.style.borderRadius = '15px';
+}
+
+// Update the inner coupon section to white with dotted border
+const couponSection = document.querySelector('#couponModal > div > div');
+if (couponSection) {
+couponSection.style.background = 'white';
+couponSection.style.border = '2px dashed #999';
+couponSection.style.borderRadius = '10px';
+couponSection.style.padding = '20px';
+couponSection.style.margin = '15px 0';
+}
+
+// Update the coupon code display
+const couponCodeDisplay = document.getElementById('couponCode');
+if (couponCodeDisplay) {
+couponCodeDisplay.style.backgroundColor = '#FFDB58'; // Golden yellow
+couponCodeDisplay.style.color = '#333'; // Dark text
+couponCodeDisplay.style.fontWeight = 'bold';
+couponCodeDisplay.style.padding = '12px 15px';
+couponCodeDisplay.style.borderRadius = '5px';
+couponCodeDisplay.style.textAlign = 'center';
+couponCodeDisplay.style.margin = '10px 0';
+couponCodeDisplay.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
+}
+
+// Update the Got It button
+const gotItButton = document.getElementById('closeCouponButton');
+if (gotItButton) {
+gotItButton.style.backgroundColor = 'white';
+gotItButton.style.color = '#333';
+gotItButton.style.border = '1px solid #ccc';
+gotItButton.style.borderRadius = '25px';
+gotItButton.style.padding = '10px 30px';
+gotItButton.style.fontSize = '16px';
+gotItButton.style.fontWeight = 'bold';
+gotItButton.style.margin = '10px 0';
+gotItButton.style.cursor = 'pointer';
+}
+
+// Make sure the title and text are black/dark
+document.getElementById('couponTitle').style.color = '#333';
+document.getElementById('discountText').style.color = '#333';
+document.getElementById('couponDescription').style.color = '#333';
+
+// Any paragraph text should be dark
+const paragraphs = document.querySelectorAll('#couponModal p');
+paragraphs.forEach(p => {
+p.style.color = '#333';
+});
+});
+
+// Add debugging to help identify issues
+window.addEventListener('load', function() {
+console.log("Window loaded - running final verification");
+
+// Test canvas
+const canvas = document.getElementById('gameCanvas');
+if (canvas) {
+try {
+const ctx = canvas.getContext('2d');
+console.log("Canvas context available:", !!ctx);
+} catch(e) {
+console.error("Canvas error:", e);
+}
+}
+
+// Test scorecard visibility
+const scoreBoard = document.getElementById('scoreBoard');
+if (scoreBoard) {
+console.log("ScoreBoard initial style:", scoreBoard.style.display);
+// Make sure image is loaded for scoreBoard
+const scoreImg = new Image();
+scoreImg.onload = function() {
+console.log("Score board background image loaded");
+};
+scoreImg.onerror = function() {
+console.error("Could not load score board background image");
+};
+scoreImg.src = 'https://dl3.pushbulletusercontent.com/O69AWgDoCCGTuZFXskiAW5jW2AYu0oVU/Score%20Board.png';
+}
+});
+
+// Add these event listeners for mouse/touch control of the bucket
+
+// Mouse movement for desktop
+gameCanvas.addEventListener('mousemove', function(e) {
+const rect = gameCanvas.getBoundingClientRect();
+basketX = e.clientX - rect.left;
+
+// Keep basket within canvas bounds
+basketX = Math.max(basketWidth / 2, Math.min(gameCanvas.width - basketWidth / 2, basketX));
+});
+
+// Touch movement for mobile
+gameCanvas.addEventListener('touchmove', function(e) {
+e.preventDefault();
+const touch = e.touches[0];
+const rect = gameCanvas.getBoundingClientRect();
+basketX = touch.clientX - rect.left;
+
+// Keep basket within canvas bounds
+basketX = Math.max(basketWidth / 2, Math.min(gameCanvas.width - basketWidth / 2, basketX));
+});
+
+// Touch start for mobile (capture initial touch position)
+gameCanvas.addEventListener('touchstart', function(e) {
+e.preventDefault();
+const touch = e.touches[0];
+const rect = gameCanvas.getBoundingClientRect();
+touchStartX = touch.clientX - rect.left;
+});
+</script>
 </body>
 </html>
