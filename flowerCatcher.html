@@ -122,13 +122,14 @@ position: absolute;
 top: 50%;
 left: 50%;
 transform: translate(-50%, -50%);
-background-color: rgba(255, 255, 255, 0.9);
-padding: 20px;
-border-radius: 10px;
+background-color: rgba(255, 255, 255, 0.95);
+padding: 25px;
+border-radius: 15px;
 text-align: center;
 z-index: 30;
 display: none;
-box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+min-width: 250px;
 }
 
 #finalScore {
@@ -145,8 +146,8 @@ color: #ff69b4;
 
 <!-- Welcome Screen -->
 <div id="welcomeScreen">
-<!-- Removing title and subtext images and just keeping the play button -->
-<img id="playButton" src="https://dl3.pushbulletusercontent.com/fpUNrHKeoIqBXTygYbizi3PIljTTN0p0/white%20play%20button.png" alt="Play" onclick="startGame()">
+    <!-- Removing title and subtext images and just keeping the play button -->
+    <img id="playButton" src="https://dl3.pushbulletusercontent.com/fpUNrHKeoIqBXTygYbizi3PIljTTN0p0/white%20play%20button.png" alt="Play" onclick="startGame()">
 </div>
 
 <!-- Game Canvas -->
@@ -162,9 +163,36 @@ color: #ff69b4;
 
 <!-- Game Over Screen (Updated) -->
 <div id="gameOver">
-<h2>Game Over!</h2>
-<p id="finalScore">Your score: 0</p>
-<!-- Removing the play again button entirely -->
+    <h2 style="color: #333; margin-bottom: 10px; font-size: 28px;">Game Over!</h2>
+    <p id="finalScore" style="color: #ff69b4; font-size: 24px; margin: 15px 0 25px;">Your score: 0</p>
+    
+    <div style="display: flex; flex-direction: column; gap: 15px; width: 80%; max-width: 200px; margin: 0 auto;">
+        <button id="playAgainButton" style="
+            background-color: #4CAF50; 
+            color: white; 
+            border: none; 
+            padding: 12px 10px; 
+            border-radius: 25px; 
+            cursor: pointer; 
+            font-size: 16px;
+            font-weight: bold;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transition: all 0.2s ease;
+        ">Play Again</button>
+        
+        <button id="exitGameButton" style="
+            background-color: #f44336; 
+            color: white; 
+            border: none; 
+            padding: 12px 10px; 
+            border-radius: 25px; 
+            cursor: pointer; 
+            font-size: 16px;
+            font-weight: bold;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transition: all 0.2s ease;
+        ">Exit Game</button>
+    </div>
 </div>
 
 <!-- Coupon Modal -->
@@ -179,7 +207,6 @@ color: #ff69b4;
 <p id="couponDescription">Valid for 14 days on all products</p>
 </div>
 <button id="closeCouponButton" style="background-color: #ff69b4; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-size: 16px;">Got it!</button>
-<button id="forcedCloseButton" style="position: absolute; top: 10px; right: 10px; background-color: red; color: white; border: none; border-radius: 50%; width: 30px; height: 30px;">X</button>
 </div>
 </div>
 </div>
@@ -189,24 +216,46 @@ color: #ff69b4;
 // Check if we're in an iframe
 const isInIframe = window !== window.parent;
 if (isInIframe) {
-// Force full dimensions when in iframe
-document.body.style.width = '100%';
-document.body.style.height = '100%';
-document.body.style.margin = '0';
-document.body.style.padding = '0';
-document.body.style.overflow = 'hidden';
+    // Force full dimensions when in iframe
+    document.body.style.width = '100%';
+    document.body.style.height = '100%';
+    document.body.style.margin = '0';
+    document.body.style.padding = '0';
+    document.body.style.overflow = 'hidden';
 }
 
-// Replace the existing COUPON_CONFIG with a single coupon definition
-const COUPON = {
-title: "SPECIAL OFFER",
-discount: "30% OFF",
-code: "FLOWERS30",
-description: "Valid for 30 days on all items"
-};
+// Add tiered coupon system with only one tier active now
 
-// Required score to win the coupon
-const REQUIRED_SCORE = 5; // Changed from 20 to 5 for easier testing
+// Replace the existing COUPON definition with a tiered system
+const COUPON_TIERS = [
+    {
+        minScore: 10,
+        title: "SPECIAL OFFER",
+        discount: "10% OFF",
+        code: "FLOWERS10",
+        description: "Valid for 30 days on all items",
+        enabled: true   // This tier is enabled
+    },
+    {
+        minScore: 20,
+        title: "AMAZING DEAL",
+        discount: "20% OFF",
+        code: "FLOWERS20",
+        description: "Valid for 30 days on all items",
+        enabled: false  // This tier is disabled for now
+    },
+    {
+        minScore: 30,
+        title: "EXCLUSIVE DEAL",
+        discount: "30% OFF",
+        code: "FLOWERS30", 
+        description: "Valid for 30 days on all items",
+        enabled: false  // This tier is disabled for now
+    }
+];
+
+// Minimum score required for any coupon (replace REQUIRED_SCORE constant)
+const MIN_COUPON_SCORE = 10;
 
 // CleverTap account credentials 
 // TODO: Replace with your CleverTap account ID
@@ -333,11 +382,11 @@ let timerInterval;
 
 // Flower colors for the petal-only design (soft pastels that match mockup)
 const flowerColors = [
-'#ff5599', // Brighter pink
-'#ff3377', // Vibrant rose
-'#ff00aa', // Hot pink
-'#ee0088', // Magenta
-'#cc3399' // Deep pink
+    '#ff5599', // Brighter pink
+    '#ff3377', // Vibrant rose
+    '#ff00aa', // Hot pink
+    '#ee0088', // Magenta
+    '#cc3399'  // Deep pink
 ];
 
 // Initialize canvas size to match window
@@ -351,58 +400,58 @@ basketY = gameCanvas.height - basketHeight - 20;
 
 // Replace your existing setContainerSizeBasedOnThumbnail function
 function setContainerSizeBasedOnThumbnail() {
-// Make container flex-centered immediately for better visual experience
-document.getElementById('gameContainer').style.margin = 'auto';
-
-const thumbnailImage = new Image();
-thumbnailImage.src = 'https://dl3.pushbulletusercontent.com/RsXmUVoiQIOnrX4GOOMMpANBCfgVd9py/thumbnail.png'; // Updated to CDN link
-
-thumbnailImage.onload = function() {
-const aspectRatio = thumbnailImage.naturalWidth / thumbnailImage.naturalHeight;
-const container = document.getElementById('gameContainer');
-
-// Get available screen dimensions
-const availableHeight = window.innerHeight;
-const availableWidth = window.innerWidth;
-
-// Calculate max dimensions while maintaining aspect ratio
-// Use 90% of available space to ensure some margin
-const maxHeight = Math.min(availableHeight * 0.9, 736); 
-const maxWidth = Math.min(availableWidth * 0.9, maxHeight * aspectRatio);
-
-// If calculated width exceeds available width, recalculate
-if (maxWidth > availableWidth * 0.9) {
-const newWidth = availableWidth * 0.9;
-const newHeight = newWidth / aspectRatio;
-container.style.width = newWidth + 'px';
-container.style.height = newHeight + 'px';
-} else {
-container.style.width = maxWidth + 'px';
-container.style.height = maxHeight + 'px';
-}
-
-// Center the container
-container.style.position = 'relative';
-container.style.margin = 'auto';
-
-// After setting container size, setup canvas
-setupCanvas();
-console.log('Game container centered and sized:', 
-container.style.width, 'x', container.style.height);
-};
-
-// Handle error case
-thumbnailImage.onerror = function() {
-console.error('Could not load thumbnail for sizing');
-// Fallback sizing
-const container = document.getElementById('gameContainer');
-container.style.width = '90vw';
-container.style.maxWidth = '414px';
-container.style.height = '90vh';
-container.style.maxHeight = '736px';
-container.style.margin = 'auto';
-setupCanvas();
-};
+    // Make container flex-centered immediately for better visual experience
+    document.getElementById('gameContainer').style.margin = 'auto';
+    
+    const thumbnailImage = new Image();
+    thumbnailImage.src = 'https://dl3.pushbulletusercontent.com/RsXmUVoiQIOnrX4GOOMMpANBCfgVd9py/thumbnail.png'; // Updated to CDN link
+    
+    thumbnailImage.onload = function() {
+        const aspectRatio = thumbnailImage.naturalWidth / thumbnailImage.naturalHeight;
+        const container = document.getElementById('gameContainer');
+        
+        // Get available screen dimensions
+        const availableHeight = window.innerHeight;
+        const availableWidth = window.innerWidth;
+        
+        // Calculate max dimensions while maintaining aspect ratio
+        // Use 90% of available space to ensure some margin
+        const maxHeight = Math.min(availableHeight * 0.9, 736); 
+        const maxWidth = Math.min(availableWidth * 0.9, maxHeight * aspectRatio);
+        
+        // If calculated width exceeds available width, recalculate
+        if (maxWidth > availableWidth * 0.9) {
+            const newWidth = availableWidth * 0.9;
+            const newHeight = newWidth / aspectRatio;
+            container.style.width = newWidth + 'px';
+            container.style.height = newHeight + 'px';
+        } else {
+            container.style.width = maxWidth + 'px';
+            container.style.height = maxHeight + 'px';
+        }
+        
+        // Center the container
+        container.style.position = 'relative';
+        container.style.margin = 'auto';
+        
+        // After setting container size, setup canvas
+        setupCanvas();
+        console.log('Game container centered and sized:', 
+                    container.style.width, 'x', container.style.height);
+    };
+    
+    // Handle error case
+    thumbnailImage.onerror = function() {
+        console.error('Could not load thumbnail for sizing');
+        // Fallback sizing
+        const container = document.getElementById('gameContainer');
+        container.style.width = '90vw';
+        container.style.maxWidth = '414px';
+        container.style.height = '90vh';
+        container.style.maxHeight = '736px';
+        container.style.margin = 'auto';
+        setupCanvas();
+    };
 }
 
 // Call this function on window load
@@ -669,345 +718,282 @@ timerDisplay.style.color = '#ff69b4';
 
 // Update endGame function
 function endGame(timeExpired = false) {
-gameActive = false;
-clearInterval(timerInterval);
+    gameActive = false;
+    clearInterval(timerInterval);
 
-console.log(`Game ended with score: ${score}, required: ${REQUIRED_SCORE}`);
+    console.log(`Game ended with score: ${score}, minimum for coupon: ${MIN_COUPON_SCORE}`);
 
-// Update the heading text based on how the game ended
-const gameOverHeading = document.querySelector('#gameOver h2');
-if (timeExpired) {
-gameOverHeading.textContent = 'Game Finished!';
-} else {
-gameOverHeading.textContent = 'Game Over!';
+    // Update the heading text based on how the game ended
+    const gameOverHeading = document.querySelector('#gameOver h2');
+    if (timeExpired) {
+        gameOverHeading.textContent = 'Game Finished!';
+    } else {
+        gameOverHeading.textContent = 'Game Over!';
+    }
+
+    finalScore.textContent = `Your score: ${score}`;
+
+    // Determine which coupon tier the player qualifies for
+    let earnedCoupon = null;
+    
+    // Check tiers from highest to lowest to give the best coupon the player qualifies for
+    for (let i = COUPON_TIERS.length - 1; i >= 0; i--) {
+        const tier = COUPON_TIERS[i];
+        if (tier.enabled && score >= tier.minScore) {
+            earnedCoupon = tier;
+            break;
+        }
+    }
+
+    // Track game completion event with coupon information
+    const userId = getUserId();
+    trackEvent("Game_Completed", {
+        "user_id": userId,
+        "score": score,
+        "game_result": timeExpired ? "completed" : "lost",
+        "coupon_earned": !!earnedCoupon,
+        "coupon_tier": earnedCoupon ? earnedCoupon.discount : "none",
+        "play_duration_seconds": 30 - gameTimer
+    });
+
+    // Show coupon or game over screen
+    if (earnedCoupon) {
+        console.log(`Player earned ${earnedCoupon.discount} coupon with score ${score}!`);
+        showCoupon(earnedCoupon);
+    } else {
+        console.log(`Score ${score} too low for any coupon, showing game over screen`);
+        gameOverScreen.style.display = 'block';
+    }
 }
 
-finalScore.textContent = `Your score: ${score}`;
+// Update showCoupon function to accept a coupon tier parameter
+function showCoupon(couponTier) {
+    console.log(`Showing coupon modal for tier: ${couponTier.discount}`);
 
-// Track game completion event
-const userId = getUserId();
-trackEvent("Game_Completed", {
-"user_id": userId,
-"score": score,
-"game_result": timeExpired ? "completed" : "lost",
-"coupon_earned": score >= REQUIRED_SCORE,
-"play_duration_seconds": 30 - gameTimer
-});
+    // Ensure the coupon modal is properly removed from display:none
+    const couponModal = document.getElementById('couponModal');
+    if (!couponModal) {
+        console.error("Coupon modal not found!");
+        return;
+    }
 
-// Show coupon immediately if score is high enough
-if (score >= REQUIRED_SCORE) {
-console.log("Score meets requirement! Showing coupon...");
-// Show coupon immediately instead of with timeout
-showCoupon();
-} else {
-console.log("Score too low for coupon, showing game over screen");
-gameOverScreen.style.display = 'block';
+    // Update coupon details with the tier that was earned
+    document.getElementById('couponTitle').textContent = couponTier.title;
+    document.getElementById('discountText').textContent = couponTier.discount;
+    document.getElementById('couponCode').textContent = couponTier.code;
+    document.getElementById('couponDescription').textContent = couponTier.description;
+
+    // Hide any other screens
+    if (gameOverScreen) gameOverScreen.style.display = 'none';
+
+    // Show coupon modal with correct display properties
+    couponModal.style.opacity = '1';
+    couponModal.style.visibility = 'visible';
+    couponModal.style.display = 'flex';
+
+    // Apply yellow theme styling
+    const couponContent = couponModal.querySelector('div');
+    if (couponContent) {
+        // Update the background to golden yellow
+        couponContent.style.backgroundColor = '#FFDB58'; // Golden yellow
+        
+        // Update the coupon section
+        const couponSection = couponContent.querySelector('div[style*="margin: 20px 0"]');
+        if (couponSection) {
+            couponSection.style.background = 'white'; // White background
+            couponSection.style.border = '2px dashed #999'; // Dashed border in gray
+            couponSection.style.backgroundImage = 'none'; // Remove gradient
+            
+            // Update the coupon code display
+            const couponCodeDisplay = document.getElementById('couponCode');
+            if (couponCodeDisplay) {
+                couponCodeDisplay.style.backgroundColor = '#FFDB58'; // Yellow background for code
+                couponCodeDisplay.style.color = '#333'; // Dark text
+            }
+        }
+        
+        // Update the button to white with dark text
+        const gotItButton = document.getElementById('closeCouponButton');
+        if (gotItButton) {
+            gotItButton.style.backgroundColor = 'white';
+            gotItButton.style.color = '#333';
+            gotItButton.style.border = '1px solid #ccc';
+            gotItButton.style.borderRadius = '25px';
+            gotItButton.style.fontWeight = 'bold';
+        }
+        
+        // Make title and text black for better readability on yellow
+        const titles = couponContent.querySelectorAll('h2, h3, p');
+        titles.forEach(element => {
+            element.style.color = '#333'; // Dark gray text
+        });
+    }
+
+    // Ensure buttons are visible and working
+    document.getElementById('closeCouponButton').style.opacity = '1';
+    
+    // Setup close button handlers
+    setupCloseButtons();
+
+    // Track event with tier information
+    trackEvent("Coupon_Shown", {
+        "coupon_code": couponTier.code,
+        "coupon_discount": couponTier.discount,
+        "coupon_title": couponTier.title,
+        "coupon_tier": couponTier.discount,
+        "score": score
+    });
 }
-}
 
-function showCoupon() {
-console.log("Showing coupon modal - FIXED version");
-
-// Ensure the coupon modal is properly removed from display:none
-const couponModal = document.getElementById('couponModal');
-if (!couponModal) {
-console.error("Coupon modal not found!");
-return;
-}
-
-// Update coupon details
-document.getElementById('couponTitle').textContent = COUPON.title;
-document.getElementById('discountText').textContent = COUPON.discount;
-document.getElementById('couponCode').textContent = COUPON.code;
-document.getElementById('couponDescription').textContent = COUPON.description;
-
-// Hide any other screens
-if (gameOverScreen) gameOverScreen.style.display = 'none';
-
-// Show coupon modal with correct display properties
-couponModal.style.opacity = '1';
-couponModal.style.visibility = 'visible';
-couponModal.style.display = 'flex';
-
-// Ensure buttons are visible and working
-document.getElementById('closeCouponButton').style.opacity = '1';
-document.getElementById('forcedCloseButton').style.opacity = '1';
-
-// Setup close button handlers
-setupCloseButtons();
-
-console.log("Coupon modal display properties:", {
-display: couponModal.style.display,
-opacity: couponModal.style.opacity,
-visibility: couponModal.style.visibility
-});
-
-// Track event
-trackEvent("Coupon_Shown", {
-"coupon_code": COUPON.code,
-"coupon_discount": COUPON.discount,
-"coupon_title": COUPON.title,
-"score": score
-});
-}
-
-// Replace both close button event handlers with this unified version
+// Update setupCloseButtons to handle tiered coupons
 function setupCloseButtons() {
-console.log("Setting up close buttons - CleverTap version");
+    console.log("Setting up close button for tiered coupon system");
 
-// Remove old event listeners safely
-const oldMainButton = document.getElementById('closeCouponButton');
-const oldForceButton = document.getElementById('forcedCloseButton');
+    // Find the current coupon tier that was awarded
+    let currentCoupon = null;
+    for (let i = COUPON_TIERS.length - 1; i >= 0; i--) {
+        const tier = COUPON_TIERS[i];
+        if (tier.enabled && score >= tier.minScore) {
+            currentCoupon = tier;
+            break;
+        }
+    }
 
-const newMainButton = oldMainButton.cloneNode(true);
-const newForceButton = oldForceButton.cloneNode(true);
+    if (!currentCoupon) {
+        console.error("No coupon tier found for current score:", score);
+        return;
+    }
 
-if (oldMainButton.parentNode) {
-oldMainButton.parentNode.replaceChild(newMainButton, oldMainButton);
+    // Remove old event listeners safely from the main button only
+    const oldMainButton = document.getElementById('closeCouponButton');
+    const newMainButton = oldMainButton.cloneNode(true);
+    
+    if (oldMainButton.parentNode) {
+        oldMainButton.parentNode.replaceChild(newMainButton, oldMainButton);
+    }
+
+    // MAIN BUTTON - Got It
+    newMainButton.addEventListener('click', function() {
+        console.log(`'Got It' button clicked for ${currentCoupon.discount} coupon`);
+
+        // Stop the game
+        gameActive = false;
+        clearInterval(timerInterval);
+        cancelAnimationFrame(animationId);
+
+        // Track event with tier information
+        trackEvent("Coupon_Claimed", {
+            "user_id": getUserId(),
+            "score": score,
+            "coupon_code": currentCoupon.code,
+            "coupon_discount": currentCoupon.discount,
+            "coupon_title": currentCoupon.title,
+            "coupon_tier": currentCoupon.discount
+        });
+
+        // Close the window using CleverTap methods
+        try {
+            // Try to close using various methods from CleverTap
+            if (window.parent && window.parent.document) {
+                const wrapper = window.parent.document.getElementById('wizParDiv0') || 
+                               window.parent.document.getElementById('wizParDiv2') ||
+                               window.parent.document.getElementById('intentPreview');
+                               
+                const overlay = window.parent.document.getElementById('intentOpacityDiv');
+                
+                if (wrapper) wrapper.remove();
+                if (overlay) overlay.remove();
+            }
+            
+            window.close();
+        } catch (e) {
+            console.error("Window close failed:", e);
+        }
+
+        // Fallback: Show thank you message
+        document.body.innerHTML = `
+            <div style="display:flex;justify-content:center;align-items:center;height:100%;text-align:center;">
+                <div>
+                    <h2>Thank you for playing!</h2>
+                    <p>Your ${currentCoupon.discount} coupon has been saved.</p>
+                    <p>Code: <strong>${currentCoupon.code}</strong></p>
+                    <button onclick="window.closeAllPossibleWays()" style="background-color: red; color: white; border: none; padding: 10px 20px; border-radius: 25px; cursor: pointer; font-size: 16px; margin-top: 20px; font-weight: bold;">Close</button>
+                </div>
+            </div>`;
+    });
+
+    console.log("Tiered coupon close button setup complete");
 }
 
-if (oldForceButton.parentNode) {
-oldForceButton.parentNode.replaceChild(newForceButton, oldForceButton);
-}
-
-// Store notification object for click tracking
-var notificationObj;
-if (window.parent && window.parent.clevertap && window.parent.clevertap.popupCallback) {
-window.parent.clevertap.popupCallback = (notificationData) => {
-notificationObj = notificationData;
-console.log("Received notification data from CleverTap");
-};
-}
-
-// MAIN BUTTON - Got It
-newMainButton.setAttribute('wzrk_c2a', 'true'); // Add attribute for click tracking
-newMainButton.addEventListener('click', function() {
-console.log("Main close button clicked - CleverTap version");
-
-// Track event
-trackEvent("Coupon_Claimed", {
-"user_id": getUserId(),
-"score": score,
-"coupon_code": COUPON.code,
-"coupon_discount": COUPON.discount,
-"coupon_title": COUPON.title,
-"coupon_description": COUPON.description
-});
-
-// Try to raise click event for custom HTML popup
-try {
-if (window.parent && window.parent.clevertap && window.parent.clevertap.raisePopupNotificationClicked && notificationObj) {
-window.parent.clevertap.raisePopupNotificationClicked(notificationObj);
-console.log("Raised popup notification clicked");
-}
-} catch (e) {
-console.error("Error raising notification clicked:", e);
-}
-
-// Method 1: Remove parent elements as per documentation
-try {
-const wrapper = window.parent.document.getElementById('wizParDiv0') || 
-window.parent.document.getElementById('wizParDiv2') ||
-window.parent.document.getElementById('intentPreview');
-
-const overlay = window.parent.document.getElementById('intentOpacityDiv');
-
-if (wrapper) {
-wrapper.remove();
-console.log("Removed wrapper element");
-}
-
-if (overlay) {
-overlay.remove();
-console.log("Removed overlay element");
-}
-} catch (e) {
-console.error("Error removing parent elements:", e);
-}
-
-// Method 2: Use CleverTap's standard close mechanism
-closeAllPossibleWays();
-
-// Fallback message if everything else fails
-document.body.innerHTML = `
-<div style="display:flex;justify-content:center;align-items:center;height:100%;text-align:center;">
-<div>
-<h2>Thank you for playing!</h2>
-<p>Your coupon has been saved.</p>
-<button onclick="closeAllPossibleWays()" style="background-color: red; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-size: 16px; margin-top: 20px;">Close</button>
-</div>
-</div>`;
-});
-
-// FORCE CLOSE BUTTON - X in corner
-newForceButton.setAttribute('wzrk_c2a', 'true'); // Add attribute for click tracking
-newForceButton.addEventListener('click', function() {
-console.log("Force close button clicked - CleverTap version");
-
-// Try to close using all possible CleverTap methods
-closeAllPossibleWays();
-
-// Fallback message if everything else fails
-document.body.innerHTML = `
-<div style="display:flex;justify-content:center;align-items:center;height:100%;text-align:center;">
-<div>
-<h2>Thank you for playing!</h2>
-<p>Maybe next time!</p>
-<button onclick="closeAllPossibleWays()" style="background-color: red; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-size: 16px; margin-top: 20px;">Close</button>
-</div>
-</div>`;
-});
-
-console.log("Close buttons setup complete - CleverTap version");
-}
-
-// Helper function to try all possible closing methods
-function closeAllPossibleWays() {
-console.log("Attempting all possible close methods");
-
-// Method 1: Standard CleverTap removal approach
-try {
-// Based on documentation, for different template types
-const types = ['wizParDiv0', 'wizParDiv2', 'intentPreview'];
-for (let id of types) {
-const element = window.parent.document.getElementById(id);
-if (element) {
-element.remove();
-console.log(`Removed ${id}`);
-}
-}
-
-// Remove overlay if it exists
-const overlay = window.parent.document.getElementById('intentOpacityDiv');
-if (overlay) overlay.remove();
-} catch (e) {
-console.error("Standard removal failed:", e);
-}
-
-// Method 2: Use CleverTap's dismissal
-try {
-if (window.parent.clevertap && typeof window.parent.clevertap.dismissSpamControl === 'function') {
-window.parent.clevertap.dismissSpamControl = true;
-console.log("Set dismissSpamControl to true");
-}
-} catch (e) {
-console.error("Setting dismissSpamControl failed:", e);
-}
-
-// Method 3: Try a different approach based on common iframe techniques
-try {
-window.parent.postMessage({"closeNotif": true}, "*");
-console.log("Posted closeNotif message to parent");
-} catch (e) {
-console.error("Posting message failed:", e);
-}
-
-// Method 4: Try window.close as last resort
-try {
-window.close();
-} catch (e) {
-console.error("Window close failed:", e);
-}
-}
-
-// Make closeAllPossibleWays globally accessible for the closing buttons
-window.closeAllPossibleWays = closeAllPossibleWays;
-
-// Clean up the initialization code by consolidating event listeners
+// Update the Game Over screen to show how close the player is to earning a coupon
 document.addEventListener('DOMContentLoaded', function() {
-console.log("UNIFIED DOM Content Loaded - Running master initialization");
-
-// Make sure play button works
-const playButton = document.getElementById('playButton');
-if (playButton) {
-playButton.addEventListener('click', function() {
-console.log('Play button clicked');
-startGame();
+    // Update Game Over screen with score goal information
+    const gameOverDiv = document.getElementById('gameOver');
+    if (gameOverDiv) {
+        // Previous Game Over HTML setup...
+        
+        // Add event listeners to the buttons
+        document.getElementById('playAgainButton').addEventListener('click', function() {
+            console.log("Play Again button clicked");
+            gameOverScreen.style.display = 'none';
+            startGame(); // Restart the game
+        });
+        
+        document.getElementById('exitGameButton').addEventListener('click', function() {
+            console.log("Exit Game button clicked");
+            
+            // Track exit event
+            trackEvent("Game_Exited", {
+                "user_id": getUserId(),
+                "final_score": score,
+                "closest_coupon_tier": MIN_COUPON_SCORE - score > 0 ? `${MIN_COUPON_SCORE - score} points away` : "qualified",
+                "screen": "game_over"
+            });
+            
+            // Use CleverTap methods to close the popup
+            closeAllPossibleWays();
+        });
+        
+        // Add score goal information for coupon
+        const goalInfo = document.createElement('p');
+        goalInfo.id = 'couponGoalInfo';
+        goalInfo.style.color = '#666';
+        goalInfo.style.fontSize = '14px';
+        goalInfo.style.margin = '0 0 20px 0';
+        
+        // Insert after the finalScore element
+        const finalScoreElem = document.getElementById('finalScore');
+        if (finalScoreElem && finalScoreElem.parentNode) {
+            finalScoreElem.parentNode.insertBefore(goalInfo, finalScoreElem.nextSibling);
+        }
+        
+        // This will be updated dynamically when the game ends
+    }
 });
+
+// Add a function to update the coupon goal information
+function updateCouponGoalInfo() {
+    const goalInfo = document.getElementById('couponGoalInfo');
+    if (!goalInfo) return;
+    
+    const pointsNeeded = MIN_COUPON_SCORE - score;
+    
+    if (pointsNeeded <= 0) {
+        // This shouldn't normally happen as they would see the coupon instead
+        goalInfo.textContent = `You qualified for a coupon!`;
+        goalInfo.style.color = '#4CAF50';
+    } else {
+        goalInfo.textContent = `Score ${pointsNeeded} more ${pointsNeeded === 1 ? 'point' : 'points'} to win a coupon!`;
+        goalInfo.style.color = '#ff69b4';
+    }
 }
 
-// Set up container size and centering
-setContainerSizeBasedOnThumbnail();
-
-// Setup close buttons
-setupCloseButtons();
-
-// Update image paths to CDN links
-document.getElementById('backgroundImage').src = 'https://dl3.pushbulletusercontent.com/Y4VH96a7Dcw9MeO7CrG5V9S47apaD26G/background.jpg';
-document.querySelector('#welcomeScreen').style.backgroundImage = "url('https://dl3.pushbulletusercontent.com/RsXmUVoiQIOnrX4GOOMMpANBCfgVd9py/thumbnail.png')";
-document.querySelectorAll('#playButton').forEach(button => {
-button.src = 'https://dl3.pushbulletusercontent.com/fpUNrHKeoIqBXTygYbizi3PIljTTN0p0/white%20play%20button.png';
-});
-
-// Log key elements to verify they exist
-console.log("Elements verification:", {
-couponModal: !!document.getElementById('couponModal'),
-closeCouponButton: !!document.getElementById('closeCouponButton'),
-forcedCloseButton: !!document.getElementById('forcedCloseButton'),
-gameOver: !!document.getElementById('gameOver'),
-scoreBoard: !!document.getElementById('scoreBoard'),
-scoreText: !!document.getElementById('scoreText')
-});
-
-// Update coupon modal styling to match the yellow design from the image
-
-// First, find the existing coupon modal div and update it
-// Update the main modal background to yellow
-const couponModalContent = document.querySelector('#couponModal > div');
-if (couponModalContent) {
-couponModalContent.style.backgroundColor = '#FFDB58'; // Golden yellow
-couponModalContent.style.padding = '25px';
-couponModalContent.style.borderRadius = '15px';
-}
-
-// Update the inner coupon section to white with dotted border
-const couponSection = document.querySelector('#couponModal > div > div');
-if (couponSection) {
-couponSection.style.background = 'white';
-couponSection.style.border = '2px dashed #999';
-couponSection.style.borderRadius = '10px';
-couponSection.style.padding = '20px';
-couponSection.style.margin = '15px 0';
-}
-
-// Update the coupon code display
-const couponCodeDisplay = document.getElementById('couponCode');
-if (couponCodeDisplay) {
-couponCodeDisplay.style.backgroundColor = '#FFDB58'; // Golden yellow
-couponCodeDisplay.style.color = '#333'; // Dark text
-couponCodeDisplay.style.fontWeight = 'bold';
-couponCodeDisplay.style.padding = '12px 15px';
-couponCodeDisplay.style.borderRadius = '5px';
-couponCodeDisplay.style.textAlign = 'center';
-couponCodeDisplay.style.margin = '10px 0';
-couponCodeDisplay.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
-}
-
-// Update the Got It button
-const gotItButton = document.getElementById('closeCouponButton');
-if (gotItButton) {
-gotItButton.style.backgroundColor = 'white';
-gotItButton.style.color = '#333';
-gotItButton.style.border = '1px solid #ccc';
-gotItButton.style.borderRadius = '25px';
-gotItButton.style.padding = '10px 30px';
-gotItButton.style.fontSize = '16px';
-gotItButton.style.fontWeight = 'bold';
-gotItButton.style.margin = '10px 0';
-gotItButton.style.cursor = 'pointer';
-}
-
-// Make sure the title and text are black/dark
-document.getElementById('couponTitle').style.color = '#333';
-document.getElementById('discountText').style.color = '#333';
-document.getElementById('couponDescription').style.color = '#333';
-
-// Any paragraph text should be dark
-const paragraphs = document.querySelectorAll('#couponModal p');
-paragraphs.forEach(p => {
-p.style.color = '#333';
-});
-});
+// Update the original endGame function to call updateCouponGoalInfo
+const originalEndGame = endGame;
+endGame = function(timeExpired = false) {
+    originalEndGame(timeExpired);
+    updateCouponGoalInfo();
+};
 
 // Add debugging to help identify issues
 window.addEventListener('load', function() {
@@ -1044,30 +1030,230 @@ scoreImg.src = 'https://dl3.pushbulletusercontent.com/O69AWgDoCCGTuZFXskiAW5jW2A
 
 // Mouse movement for desktop
 gameCanvas.addEventListener('mousemove', function(e) {
-const rect = gameCanvas.getBoundingClientRect();
-basketX = e.clientX - rect.left;
-
-// Keep basket within canvas bounds
-basketX = Math.max(basketWidth / 2, Math.min(gameCanvas.width - basketWidth / 2, basketX));
+    const rect = gameCanvas.getBoundingClientRect();
+    basketX = e.clientX - rect.left;
+    
+    // Keep basket within canvas bounds
+    basketX = Math.max(basketWidth / 2, Math.min(gameCanvas.width - basketWidth / 2, basketX));
 });
 
 // Touch movement for mobile
 gameCanvas.addEventListener('touchmove', function(e) {
-e.preventDefault();
-const touch = e.touches[0];
-const rect = gameCanvas.getBoundingClientRect();
-basketX = touch.clientX - rect.left;
-
-// Keep basket within canvas bounds
-basketX = Math.max(basketWidth / 2, Math.min(gameCanvas.width - basketWidth / 2, basketX));
+    e.preventDefault();
+    const touch = e.touches[0];
+    const rect = gameCanvas.getBoundingClientRect();
+    basketX = touch.clientX - rect.left;
+    
+    // Keep basket within canvas bounds
+    basketX = Math.max(basketWidth / 2, Math.min(gameCanvas.width - basketWidth / 2, basketX));
 });
 
 // Touch start for mobile (capture initial touch position)
 gameCanvas.addEventListener('touchstart', function(e) {
-e.preventDefault();
-const touch = e.touches[0];
-const rect = gameCanvas.getBoundingClientRect();
-touchStartX = touch.clientX - rect.left;
+    e.preventDefault();
+    const touch = e.touches[0];
+    const rect = gameCanvas.getBoundingClientRect();
+    touchStartX = touch.clientX - rect.left;
+});
+
+// Update the Game Over Screen HTML with vertical buttons and improved aesthetics
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Update Game Over screen with vertically stacked buttons
+    const gameOverDiv = document.getElementById('gameOver');
+    if (gameOverDiv) {
+        // Clear existing content
+        gameOverDiv.innerHTML = `
+            <h2 style="color: #333; margin-bottom: 10px; font-size: 28px;">Game Over!</h2>
+            <p id="finalScore" style="color: #ff69b4; font-size: 24px; margin: 15px 0 25px;">Your score: 0</p>
+            
+            <div style="display: flex; flex-direction: column; gap: 15px; width: 80%; max-width: 200px; margin: 0 auto;">
+                <button id="playAgainButton" style="
+                    background-color: #4CAF50; 
+                    color: white; 
+                    border: none; 
+                    padding: 12px 10px; 
+                    border-radius: 25px; 
+                    cursor: pointer; 
+                    font-size: 16px;
+                    font-weight: bold;
+                    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+                    transition: all 0.2s ease;
+                ">Play Again</button>
+                
+                <button id="exitGameButton" style="
+                    background-color: #f44336; 
+                    color: white; 
+                    border: none; 
+                    padding: 12px 10px; 
+                    border-radius: 25px; 
+                    cursor: pointer; 
+                    font-size: 16px;
+                    font-weight: bold;
+                    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+                    transition: all 0.2s ease;
+                ">Exit Game</button>
+            </div>
+        `;
+        
+        // Add hover effect with JavaScript for better user experience
+        const buttons = gameOverDiv.querySelectorAll('button');
+        buttons.forEach(button => {
+            button.addEventListener('mouseover', function() {
+                this.style.transform = 'scale(1.05)';
+                this.style.boxShadow = '0 6px 12px rgba(0,0,0,0.15)';
+            });
+            
+            button.addEventListener('mouseout', function() {
+                this.style.transform = 'scale(1)';
+                this.style.boxShadow = '0 4px 8px rgba(0,0,0,0.1)';
+            });
+            
+            button.addEventListener('mousedown', function() {
+                this.style.transform = 'scale(0.98)';
+            });
+            
+            button.addEventListener('mouseup', function() {
+                this.style.transform = 'scale(1.05)';
+            });
+        });
+        
+        // Add event listeners to the buttons
+        document.getElementById('playAgainButton').addEventListener('click', function() {
+            console.log("Play Again button clicked");
+            gameOverScreen.style.display = 'none';
+            startGame(); // Restart the game
+        });
+        
+        document.getElementById('exitGameButton').addEventListener('click', function() {
+            console.log("Exit Game button clicked");
+            
+            // Track exit event
+            trackEvent("Game_Exited", {
+                "user_id": getUserId(),
+                "final_score": score,
+                "screen": "game_over"
+            });
+            
+            // Use CleverTap methods to close the popup
+            closeAllPossibleWays();
+        });
+    }
+    
+    // Also update the game over container styling for a better look
+    gameOverScreen.style.backgroundColor = 'rgba(255, 255, 255, 0.95)';
+    gameOverScreen.style.borderRadius = '15px';
+    gameOverScreen.style.boxShadow = '0 8px 20px rgba(0, 0, 0, 0.2)';
+    gameOverScreen.style.padding = '25px';
+    gameOverScreen.style.minWidth = '250px';
+});
+
+// Add the closeAllPossibleWays function if it doesn't exist already
+function closeAllPossibleWays() {
+    console.log("Attempting all possible close methods");
+    
+    // Method 1: Box template
+    try {
+        const boxWrapper = window.parent.document.getElementById('wizParDiv0');
+        if (boxWrapper) {
+            boxWrapper.remove();
+            console.log("Removed box wrapper element");
+            return;
+        }
+    } catch (e) {
+        console.error("Box removal failed:", e);
+    }
+    
+    // Method 2: Banner template
+    try {
+        const bannerWrapper = window.parent.document.getElementById('wizParDiv2');
+        if (bannerWrapper) {
+            bannerWrapper.remove();
+            console.log("Removed banner wrapper element");
+            return;
+        }
+    } catch (e) {
+        console.error("Banner removal failed:", e);
+    }
+    
+    // Method 3: Interstitial template
+    try {
+        const overlay = window.parent.document.getElementById('intentOpacityDiv');
+        const wrapper = window.parent.document.getElementById('intentPreview');
+        
+        if (overlay) overlay.remove();
+        if (wrapper) wrapper.remove();
+        
+        if (overlay || wrapper) {
+            console.log("Removed interstitial elements");
+            return;
+        }
+    } catch (e) {
+        console.error("Interstitial removal failed:", e);
+    }
+    
+    // Method 4: Try a different approach based on common iframe techniques
+    try {
+        window.parent.postMessage({"closeNotif": true}, "*");
+        console.log("Posted closeNotif message to parent");
+    } catch (e) {
+        console.error("Posting message failed:", e);
+    }
+    
+    // Method 5: Try window.close as last resort
+    try {
+        window.close();
+    } catch (e) {
+        console.error("Window close failed:", e);
+    }
+}
+
+// Make closeAllPossibleWays globally accessible
+window.closeAllPossibleWays = closeAllPossibleWays;
+
+// Update the coupon modal section to match the yellow/gold design
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Update the coupon modal styling to yellow theme
+    const couponModal = document.getElementById('couponModal');
+    if (couponModal) {
+        const couponContent = couponModal.querySelector('div');
+        if (couponContent) {
+            // Update the background to golden yellow
+            couponContent.style.backgroundColor = '#FFDB58'; // Golden yellow color
+            
+            // Update the coupon section
+            const couponSection = couponContent.querySelector('div[style*="margin: 20px 0"]');
+            if (couponSection) {
+                couponSection.style.background = 'white'; // White background
+                couponSection.style.border = '2px dashed #999'; // Dashed border in gray
+                couponSection.style.backgroundImage = 'none'; // Remove gradient
+                
+                // Update the coupon code display
+                const couponCodeDisplay = document.getElementById('couponCode');
+                if (couponCodeDisplay) {
+                    couponCodeDisplay.style.backgroundColor = '#FFDB58'; // Yellow background for code
+                    couponCodeDisplay.style.color = '#333'; // Dark text for better readability
+                }
+            }
+            
+            // Update the button to white with dark text
+            const gotItButton = document.getElementById('closeCouponButton');
+            if (gotItButton) {
+                gotItButton.style.backgroundColor = 'white';
+                gotItButton.style.color = '#333';
+                gotItButton.style.border = '1px solid #ccc';
+                gotItButton.style.borderRadius = '25px';
+                gotItButton.style.fontWeight = 'bold';
+            }
+            
+            // Make title and text black for better readability on yellow
+            const titles = couponContent.querySelectorAll('h2, h3, p');
+            titles.forEach(element => {
+                element.style.color = '#333'; // Dark gray text
+            });
+        }
+    }
 });
 </script>
 </body>
